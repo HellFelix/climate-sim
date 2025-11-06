@@ -1,0 +1,27 @@
+[package]
+name = "climate-sim"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+wayland-backend = { version = "0.1.0-beta.15" }
+bevy = { version = "0.16", features = ["wayland"] }
+anyhow = "1.0.100"
+
+
+
+# Enable a small amount of optimization in the dev profile.
+[profile.dev]
+opt-level = 1
+
+# Enable a large amount of optimization in the dev profile for dependencies.
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+# Compile the entire crate as one unit.
+# Slows compile times, marginal improvements.
+codegen-units = 1
+# Do a second optimization pass over the entire program, including dependencies.
+# Slows compile times, marginal improvements.
+lto = "thin"
