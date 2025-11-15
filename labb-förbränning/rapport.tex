@@ -1,0 +1,164 @@
+\documentclass[12pt]{article}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[swedish]{babel}
+
+\title{Labbrapport – Förbränning}
+\author{
+    Felix Hellborg, F24, fe7543he-s@student.lu.se \\
+    Rasmus Pernesten, F24, (RASMUS - Fyll i din mejl här!!) \\
+    \\
+    \textbf{Labhandledare:} (RASMUS - kommer du ihåg vad han heter?)
+}
+\date{
+    \textbf{Laborationsdatum:} 2025-11-12 \\
+    \textbf{Inlämningsdatum:} 2025-11-DD
+}
+
+\begin{document}
+  \maketitle
+  \newpage
+
+  \section{Syftet med laborationen i Förbränning}
+  \begin{itemize}
+    \item Att träna de termodynamiska begreppen så att ökad insikt erhålls om temperatur, entalpi, entropi, och värmekapacitet, och sambanden dem emellan. Detta görs bl.a. genom beräkningar av reaktionsentalpier och flamtemperaturer.
+    \item Att tillämpa termodynamik på förbränningsprocesser.
+    \item Att få insikt i de processer som sker vid förbränning.
+    \item Att få träning i att utföra och analysera experiment.
+    \item Att reflektera över mätteknikers möjligheter och begränsningar.
+  \end{itemize}
+
+  \section{Experimentuppställning}
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{experiment-setup.png}
+      \caption{A: Flamma
+              B: Brännare bestående av
+              ett långt rör, på vilket
+              flamman stabiliseras
+              C: Två rotametrar för
+              inställning av flödet på
+              metan respektive luft.
+              D: Termoelement för
+              termperaturmätning
+              E: Mikrometerskruv för
+              positionering av
+              termoelement
+              F: Avläsningsinstrument
+              för temperatur.}
+      \label{fig:setup}
+  \end{figure}
+
+  \section{Utförande}
+  Under laborationen studerades metan/luftförbränning, dels genom temperaturmätningar med termoelement och dels genom direkta visuella observationer. Temperaturen uppmättes i ett stort antal mätpunkter i en s.k. Bunsentyp-flamma med hjälp av termoelement. Två olika flammor (flamma I och II) studerades och dessa hade olika flödesinställningar på rotametrarna. \\
+  I: Metan 0.48 l/min., Luft 3.5 l/min. \\
+  II: Metan 0.38 l/min., Luft 3.6 l/min. \\
+  Temperaturmätningarna gjordes med två olika termoelement märkta A och B. Båda är av typ R och har olika storlek på mätkulan. Mätningarna utfördes enligt nedanstående beskrivning och enligt skissen i figur \ref{fig:positions}.
+
+  \begin{figure}[H]
+      \centering
+      \includegraphics[width=0.8\textwidth]{flame-positions.png}
+      \caption{Illustration av mätpunkterna i flamman.}
+      \label{fig:positions}
+  \end{figure}
+
+  \section{Resultat}
+
+  (RASMUS pls fix)
+
+  \section{Diskussion}
+
+  \section{Frågor om Rayleigh Experiment}
+  \begin{enumerate}[label=(\alph*)]
+    \item Hur ser temperaturfördelningen ut i 2D-bilden på flamman? Var är de kallare/varmare områdena. Förklara utifrån fysikaliska principer. \\
+      Svar: På bilden ser vi tre olika områden. I mitten av bilden ser vi ett ljusare område vilket är insidan av flamman, omgiven av reaktionsområdet (de mörkare områdena). Utanför reaktionsområdet ser vi ett ljusare område vilket är området utanför flamman. Vi vet att den uppmätta signalen från Rayleigh-spridning är proportionell mot koncentrationen av partiklar i sin tur (enligt ideala gaslagen) är omvänt proportionell mot temperaturen. De mörkare områdena på bilden är alltså de områden som gav lägst signalstyrka (alltså de varmaste områdena).
+
+    \item Varför ser vi de vita prickarna i bilden? \\
+      Svar: De vita prickarna är observationer av Mie-spridning vilket uppstår när partiklar är i samma storleksordning som det ljus med vilket partiklarna belyses. Det kan exempelvis ha uppstått från dammpartiklar i luften, eller andra mikroskopiska partiklar. Denna effekt är mycket starkare än Rayleigh-spridning, och vi ser det därför som högintensiva prickar på bilden.
+
+    \item Jämför de två mätteknikerna (termoelement och Rayleighspridning) för temperaturmätning i en flamma. \\
+      Svar: Se tabell. \\
+      
+      \begin{center}
+        \begin{tabular}{ | m{5cm} | m{1.5cm}| m{5cm} | } 
+          \hline
+          Avseende & Bästa mätteknik & Kommentar \\
+          \hline
+          Tidsåtgång för kartläggning av flammans temperatur & Termoelement & Med tiden som krävs för experiment-uppställning är det rimligt att anta att den totala tiden för kartläggning av temperaturen tar längre tid med Rayleigh-spridning. Däremot är själva mätningarna mycket snabba när experimentet väl är uppställt. \\ 
+          \hline
+          Påverkan på flamman från mätsystemet & Rayleigh-spridning & Termoelement stör flamman mycket, vilket man visuellt kan se då flamman ändrar form och deformeras kring termoelement när detta införs. Detsamma kan inte sägas för Rayleigh-spridning, där flamman ser ut att vara ostörd av lasern. \\ 
+          \hline
+          Kunskapskrav för användare av mätsystemet & Termoelement & Termoelement är det mest intuitiva sättet att mäta temperatur. Vi vill mäta temperaturen på ett objekt, så vi för in ett instrument och ser hur varmt det blir. Rayleigh-spridning kräver djupare förståelse av ljusets beteende vad gäller exitation/deexitaion, för att inte nämna hur och varför en LASER fungerar. \\ 
+          \hline
+          Säkerhetsaspekter & Termoelement & Termoelementet i sig är i princip ofarligt. Den risk som finns är just bunsenbrännaren, som producerar en mycket varm flamma. LASERn som används för att mäta Rayleigh-spridning innebär en extra säkerhetsrisk då dess direkta strålar eller reflektioner kan orsaka hud- och särskilt ögonskada. Riskerna kan dock minimeras genom att avskärma experimentet, bära LASER-skyddsglasögon och sätta upp varningsskyltar så att obehöriga inte råkar gå in i experiment-salen. \\ 
+          \hline
+          Pris & Termoelement & LASERn som användes i videon kostar flera hundra tusen kronor, och kameran som användes noterades även vara dyr. Värt att nämna dock är att dessa mätinstrument har många andra användningsområden, medan termoelement är väldigt specifikt för att mäta temperatur. \\ 
+          \hline
+        \end{tabular}
+      \end{center}     
+  \end{enumerate}
+
+  \section{Andra Frågor}
+
+  \begin{enumerate}
+    \item Vad händer med temperaturen i produktzonen från en förbränning om kvävgasen i luften byts ut mot argon eller mot koldioxid? Motivera i termodynamiska termer! \\
+      Svar: Låt oss anta att varje kvävgas-molekyl byts ut mot atomär Argon.
+
+      Enligt NIST databas (\url{https://webbook.nist.gov/cgi/cbook.cgi?ID=C7440371&Mask=1&Table=on&Type=JANAFG}) är värdet av $H^0 - H^0(298.15K) = 41.61kJ/mol$ vid $2300K$ vilket är mindre än motsvarande värde för kvävgas vid samma temperatur ($66.995kJ/mol$). Det krävs alltså mindre energi att värma upp ett mol Argon än ett mol kvävgas till $2300K$. Vi borde därför förvänta oss att lågan brinner varmare i en omgivning av argon.
+
+      På samma vis kan vi se att lågan borde brinna kallare om kvävgasen byts ut mot koldioxid eftersom $H^0 - H^0(298.15K) = 109.660kJ/mol$ för koldioxid vid $2300K$. Dvs, det krävs mer energi att värma ett mol koldioxid än ett mol kvävgas.
+      
+    \item Fossila bränslen anses bidra till den utökade växthuseffekten, dvs att klimatet blir varmare, genom utsläpp av framförallt koldioxid. Det är då önskvärt att det produceras en liten mängd koldioxid per producerad energimängd. Kol ger $80-85 kg CO_2/GJ$, och olja ger ca $70 kg CO_2/GJ$. Stämmer det att naturgas är mer gynnsamt ur denna aspekt? Beräkna motsvarande värde för naturgas och gasol och jämför med olja och kol. \\
+      Svar: Vi beräknar värdet av mängd $CO_2/GJ$ för naturgas (metan): \\
+      
+      $$CH_4 + O_2 \rightarrow CO_2 + 2H_2O$$
+
+      Vi beräknar utifrån det lägre värmevärdet (flytande vatten).
+
+      \begin{equation}
+        \Delta H = \Delta H^0_f(CO_2) + 2 \Delta H^0_f(H_2O) - 2 \Delta H^0_f(O_2) - \Delta H^0_f(CH_4) = -802.3kJ/mol
+      \end{equation}
+
+      Med molarmassor $m(CH_4) = 16g/mol$ och $m(CO_2) = 44g/mol$ får vi $44/16 = 2.75 kg CO_2 / kg CH_4$.
+
+      Energin vi får ut per $kg$ metan blir
+
+      \begin{equation}
+        \frac{802.3kJ/mol}{0.016kg/mol} = 50.143... MJ/kg
+      \end{equation}
+
+      dvs 
+
+      \begin{equation}
+        \frac{2.75kg CO_2 /kg}{50.143... MJ/kg} = 0.05484 kg CO_2 / MJ \approx 55 kg CO_2 / GJ
+      \end{equation}
+      
+
+      Och detsamma för gasol (propan):
+
+      $$C_3H_8 + 5O_2 \rightarrow 3CO_2 + 4H_2O$$
+
+      \begin{equation}
+        \Delta H = \Delta 3 H^0_f(CO_2) + 4 \Delta H^0_f(H_2O) - 5 \Delta H^0_f(O_2) - \Delta H^0_f(C_3H_8) = -2217.1 kJ
+      \end{equation}
+
+      Med molarmassor $m(C_3H_8) = 44g/mol$ och $m(CO_2) = 44g/mol$ får vi $44*3/44 = 3.0 kg CO_2 / kg C_3H_8$.
+
+      Energin vi får ut per $kg$ propan blir
+
+      \begin{equation}
+        \frac{2217.1kJ/mol}{0.044kg/mol} = 50.388... MJ/kg
+      \end{equation}
+
+      dvs 
+
+      \begin{equation}
+        \frac{3.0kg CO_2 /kg}{50.388... MJ/kg} = 0.0595... kg CO_2 / MJ \approx 60 kg CO_2 / GJ
+      \end{equation}
+      
+      Vid förbränning av metan produceras minst koldioxid per energienhet (ca $55kg CO_2/GJ$). Näst bäst är propan (ca $50kg CO_2/GJ$). Efter det kommer olja och sämst är kol.
+  \end{enumerate}
+\end{document}
