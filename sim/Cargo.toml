@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 wayland-backend = { version = "0.1.0-beta.15" }
-bevy = { version = "0.16", features = ["wayland"] }
+bevy = { version = "0.16", features = ["wayland", "jpeg"] }
 anyhow = "1.0.100"
 
 
