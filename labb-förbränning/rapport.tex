@@ -9,9 +9,9 @@
 \title{Labbrapport – Förbränning}
 \author{
     Felix Hellborg, F24, fe7543he-s@student.lu.se \\
-    Rasmus Pernesten, F24, (RASMUS - Fyll i din mejl här!!) \\
+    Rasmus Pernesten, F24, ra0821pe-s@student.lu.se \\
     \\
-    \textbf{Labhandledare:} (RASMUS - kommer du ihåg vad han heter?)
+    \textbf{Labhandledare:} Matias Richter 
 }
 \date{
     \textbf{Laborationsdatum:} 2025-11-12 \\
@@ -54,8 +54,8 @@
 
   \section{Utförande}
   Under laborationen studerades metan/luftförbränning, dels genom temperaturmätningar med termoelement och dels genom direkta visuella observationer. Temperaturen uppmättes i ett stort antal mätpunkter i en s.k. Bunsentyp-flamma med hjälp av termoelement. Två olika flammor (flamma I och II) studerades och dessa hade olika flödesinställningar på rotametrarna. \\
-  I: Metan 0.48 l/min., Luft 3.5 l/min. \\
-  II: Metan 0.38 l/min., Luft 3.6 l/min. \\
+  I: Metan 0.48 l/min., Luft 3.5 l/min. $\Phi \approx 1.306$  \\
+  II: Metan 0.38 l/min., Luft 3.6 l/min. $\Phi \approx 1.01$ \\
   Temperaturmätningarna gjordes med två olika termoelement märkta A och B. Båda är av typ R och har olika storlek på mätkulan. Mätningarna utfördes enligt nedanstående beskrivning och enligt skissen i figur \ref{fig:positions}.
 
   \begin{figure}[H]
@@ -64,12 +64,91 @@
       \caption{Illustration av mätpunkterna i flamman.}
       \label{fig:positions}
   \end{figure}
-
+  \newpage 
   \section{Resultat}
+   
+   \begin{table}[h!]
+    \centering
+     \caption{Blandning I (Metan: 0.48l/min., Luft: 3.5l/min.) $\Phi \approx 1.306$}
 
-  (RASMUS pls fix)
+    \label{tab:mitt-label}
+    \begin{tabular}{l c r}
+        \hline
+        position & Prob A & Prob B \\ 
+        \hline 
+        $\alpha$&384&331\\
+        $\beta$&730& 385\\
+        $\gamma_1$  &1380&1390\\
+        $\gamma_2$&1427&1395\\
+        $\gamma_3$&1441&1435\\
+        $\gamma_4$&1468&1460\\
+        $\gamma_5$&1469&1480\\
+        $\gamma_6$&1444&1508\\
+        $\gamma_7$&1322&1533\\
+        $\gamma_8$&1175&1550\\
+        $\gamma_9$&1010&1470\\
+        $\gamma_{10}$&844&1400\\
+        $\delta$&1410&1400\\
 
-  \section{Diskussion}
+    \end{tabular}
+   \end{table}
+
+ 
+   \begin{table}[h!]
+    \centering
+     \caption{Blandning II (Metan: 0.38l/min., Luft: 3.6l/min.), $\Phi \approx 1.01$}
+
+    \label{tab:mitt-label}
+    \begin{tabular}{l c r}
+        \hline
+        position & Prob A & Prob B \\ 
+        \hline 
+        $\alpha$&--&390\\
+        $\beta$&1150& 460\\
+        $\gamma_1$&1450&1600\\
+        $\gamma_2$&--&1580\\
+        $\gamma_3$&--&1610\\
+        $\gamma_4$&--&1605\\
+        $\gamma_5$&--&1582\\
+        $\gamma_6$&--&1520\\
+        $\gamma_7$&--&1395\\
+        $\gamma_8$&--&1220\\
+        $\gamma_9$&--&1080\\
+        $\gamma_{10}$&--&908\\
+        $\delta$&--&1360\\
+
+    \end{tabular}
+   \end{table}
+  \newpage
+  
+   \begin{figure}[h!]
+     \centering
+     \includegraphics[width=0.8\textwidth]{figur1_gamma1_till_gamma10.png}% eller utan .png
+     \caption{Tempraturen för prob A och B för balnding I och II vid avstond $\gamma_1$ till $\gamma_{10}$}
+     \label{fig:gamma1_till_10}
+   \end{figure} 
+   \begin{figure}[h!]
+     \centering
+     \includegraphics[width=0.8\textwidth]{figur2_gamma1_vs_Phi.png} % eller utan .png
+     \caption{Tempraturen för prob A och B och blanding I och II vid avstånd $\gamma_1$ som en funktion av dess blandningsförhollande $\Phi$}
+     \label{fig:gamma1_och2_vid_phi}
+   \end{figure}
+
+\newpage
+
+ \section{Diskussion}
+    Som vi kan se från tabell 1 och 2 är tempraturen vid $\alpha$ och $\beta$ nära rumstempratur vilket stämmer överens med teroin då all reaktion sker vid en flammfront och dessa punkter är inannför den. 
+    I dessa punkter kommer värme endast från strålningen från reaktionsfronten. I punkt $\beta$ är det varmare än rumstempratur vilket delvis kan förklaras av att den är närmre flammfronten och det strålar därför mer men det beror troligtvis mestadels på fel i mätningen som att proberna har en volym och därför kan de ha rört vid flamfronten.
+    Detta sryrks av det faktum att prob B hade mindre skillnad mellan de två punkterna, se tabell 1, och det var den mindre proben.
+    \\
+    Vidare har vi vid teroetiska beräkningar kommit fram till att flammtempraturen borde ligga kring 2300 K vilket skiljer sig stort från vårt uppmätta resultat. Det fins många skäl till denna diferans. Främst så mäter inte instrumentet tempraturen på flamamn utan tempraturen på proben och eftersom den strålar kommer den inte nå flammans tempratur vilket står för en diferans på mellan 100 och 200 K. Denna diferans ökar med arean av proben och $T⁴$ vilket kan ses i Figur 5 (prob B är mindre än A).
+    Utöver det har vi i teroin antagit total förbränning av reaktanterna vilket inte riktigt stämmer.
+    Dessutom har vi antagit adiabatisk reaktion vilket inte heller riktigt gäller. Utöver detta fins alltid den mänskliga faktorn, instrumetntet mäter som vi sagt tidigare endast tempraturen på proben och om den inte hunnit nå gämnvikt med flamman kommer mätvärldena vara felaktiga.
+    \\
+    Andra intresanta saker vi kan se är att den stokimetriska flamman ($\Phi \approx 1.0$) har högre tempratur vid $\gamma_1$ eftersom mer brensle förbräns vid flamfronten i en stökometrisk blandning än en bränslerik. Den bränslerika kommer inte förbrenans helt förän den får tillgång till mer syre vilket ger den en halo där mer energi frigörs.
+    Detta svarar på varför tempraturen först ökar när vi rör oss bort från flamfronent, se de gröan mätvärldena på figur 4, vi verkar nå ett maxima vid $\gamma_7$ eller $\gamma_8$ vilket troligtvis är var halon slutar och alltså där all energi frigjorts hoss den brenslerika blandingen.
+
+
 
   \section{Frågor om Rayleigh Experiment}
   \begin{enumerate}[label=(\alph*)]
