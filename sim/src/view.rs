@@ -7,14 +7,18 @@ pub enum ViewPoint {
     SolarSystem,
     Planet,
     FreeCam,
-    Map,
 }
 
 pub fn solar_system_transform() -> Transform {
     Transform::from_xyz(0., 0., 30.).looking_at(Vec3::new(0., 0., 0.), Vec3::Y)
 }
 
-pub fn toggle_view(keyboard: Res<ButtonInput<KeyCode>>, mut query: Query<&mut ViewPoint>) {
+pub fn toggle_view(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    mut query: Query<&mut ViewPoint>,
+    mut q3d: Query<&mut Camera, With<Camera3d>>,
+    mut q2d: Query<&mut Camera, Without<Camera3d>>,
+) {
     let mut view_point = query.single_mut().unwrap();
     if keyboard.just_pressed(KeyCode::KeyO) {
         *view_point = ViewPoint::SolarSystem;
@@ -23,7 +27,15 @@ pub fn toggle_view(keyboard: Res<ButtonInput<KeyCode>>, mut query: Query<&mut Vi
     } else if keyboard.just_pressed(KeyCode::KeyF) {
         *view_point = ViewPoint::FreeCam;
     } else if keyboard.just_pressed(KeyCode::KeyM) {
-        *view_point = ViewPoint::Map;
+        // Doesn't change ViewPoint, only toggles map.
+        let mut cam3d = q3d.single_mut().unwrap();
+        let mut cam2d = q2d.single_mut().unwrap();
+
+        let use_3d = !cam3d.is_active;
+
+        info!("Toggling");
+        cam3d.is_active = use_3d;
+        cam2d.is_active = !use_3d;
     }
 }
 
@@ -41,7 +53,6 @@ pub fn update_camera(
         }
         ViewPoint::Planet => set_view_planet(&mut camera_transform, planet_transform),
         ViewPoint::FreeCam => set_view_free_cam(&mut camera_transform, keyboard),
-        _ => {}
     }
 }
 
@@ -86,4 +97,61 @@ fn set_view_free_cam(camera_transform: &mut Transform, keyboard: Res<ButtonInput
     } else if keyboard.pressed(KeyCode::ArrowLeft) {
         camera_transform.rotate_axis(camera_transform.up(), rotation_speed);
     }
+}
+
+#[derive(Component)]
+pub struct OverlayCamera2d;
+
+#[derive(Component)]
+struct OverlayRoot;
+
+// Spawn cameras
+pub fn setup_cameras(mut commands: Commands, asset_server: Res<AssetServer>) {
+    // 3D camera
+    commands.spawn((
+        Camera3d::default(),
+        Camera {
+            is_active: true,
+            ..default()
+        },
+        ViewPoint::SolarSystem, // Set to solar system by default
+        solar_system_transform(),
+    ));
+
+    // 2D overlay camera
+    let cam_2d = commands
+        .spawn((
+            Camera2d,
+            Camera {
+                order: 10,
+                is_active: false,
+                ..default()
+            },
+            OverlayCamera2d,
+        ))
+        .id();
+
+    // Fullscreen image *targeted at that 2D camera*
+    let texture: Handle<Image> = asset_server.load("world.jpg");
+
+    commands
+        .spawn((
+            Node {
+                width: Val::Percent(100.0),
+                height: Val::Percent(100.0),
+                ..default()
+            },
+            UiTargetCamera(cam_2d), // <- key line!
+            OverlayRoot,
+        ))
+        .with_children(|parent| {
+            parent.spawn((
+                ImageNode::new(texture),
+                Node {
+                    width: Val::Percent(100.0),
+                    height: Val::Percent(100.0),
+                    ..default()
+                },
+            ));
+        });
 }

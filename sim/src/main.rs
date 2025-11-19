@@ -1,20 +1,13 @@
 use std::f32::consts::PI;
 
-use bevy::image::ImageSampler;
-use bevy::math::FloatOrd;
 use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
-use bevy::render::camera::{ImageRenderTarget, RenderTarget};
-use bevy::render::render_resource::TextureUsages;
-use bevy::render::view::RenderLayers;
 use bevy::sprite::Material2dPlugin;
 use bevy::{
-    asset::RenderAssetUsages,
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
 
 use crate::planet::{Planet, PlanetStats};
-use crate::projection::{MiniMapHandle, MinimapMaterial};
 use crate::view::{ViewPoint, solar_system_transform};
 
 mod consts;
@@ -24,12 +17,8 @@ mod view;
 
 fn main() {
     App::new()
-        .add_plugins((
-            DefaultPlugins.set(ImagePlugin::default_nearest()),
-            WireframePlugin::default(),
-            Material2dPlugin::<MinimapMaterial>::default(),
-        ))
-        .add_systems(Startup, setup)
+        .add_plugins((DefaultPlugins.set(ImagePlugin::default_nearest()),))
+        .add_systems(Startup, (setup, view::setup_cameras))
         .add_systems(
             Update,
             (
@@ -91,11 +80,6 @@ fn setup(
             ..default()
         },
         Transform::from_xyz(0., 0., 0.),
-    ));
-    commands.spawn((
-        Camera3d::default(),
-        ViewPoint::SolarSystem, // Set to solar system by default
-        solar_system_transform(),
     ));
     commands.spawn((
         Text::new(""),
