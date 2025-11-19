@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage{float}
 \usepackage{hyperref}
+\usepackage{longtable}
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{enumitem}
@@ -124,29 +125,29 @@
    \begin{figure}[h!]
      \centering
      \includegraphics[width=0.8\textwidth]{figur1_gamma1_till_gamma10.png}% eller utan .png
-     \caption{Tempraturen för prob A och B för balnding I och II vid avstond $\gamma_1$ till $\gamma_{10}$}
+     \caption{Temperaturen för prob A och B för balnding I och II vid avstond $\gamma_1$ till $\gamma_{10}$}
      \label{fig:gamma1_till_10}
    \end{figure} 
    \begin{figure}[h!]
      \centering
      \includegraphics[width=0.8\textwidth]{figur2_gamma1_vs_Phi.png} % eller utan .png
-     \caption{Tempraturen för prob A och B och blanding I och II vid avstånd $\gamma_1$ som en funktion av dess blandningsförhollande $\Phi$}
+     \caption{Temperaturen för prob A och B och blanding I och II vid avstånd $\gamma_1$ som en funktion av dess blandningsförhollande $\Phi$}
      \label{fig:gamma1_och2_vid_phi}
    \end{figure}
 
 \newpage
 
  \section{Diskussion}
-    Som vi kan se från tabell 1 och 2 är tempraturen vid $\alpha$ och $\beta$ nära rumstempratur vilket stämmer överens med teroin då all reaktion sker vid en flammfront och dessa punkter är inannför den. 
-    I dessa punkter kommer värme endast från strålningen från reaktionsfronten. I punkt $\beta$ är det varmare än rumstempratur vilket delvis kan förklaras av att den är närmre flammfronten och det strålar därför mer men det beror troligtvis mestadels på fel i mätningen som att proberna har en volym och därför kan de ha rört vid flamfronten.
-    Detta sryrks av det faktum att prob B hade mindre skillnad mellan de två punkterna, se tabell 1, och det var den mindre proben.
+    Som vi kan se från tabell 1 och 2 är temperaturen vid $\alpha$ och $\beta$ nära rumstemperatur vilket stämmer överens med teorin då all reaktion sker vid en flammfront och dessa punkter är innanför den. 
+    I dessa punkter kommer värme endast från strålningen från reaktionsfronten. I punkt $\beta$ är det varmare än rumstemperatur vilket delvis kan förklaras av att den är närmre flammfronten och det strålar därför mer men det beror troligtvis mestadels på fel i mätningen som att proberna har en volym och därför kan de ha rört vid flammfronten.
+    Detta styrks av det faktum att prob B hade mindre skillnad mellan de två punkterna, se tabell 1, och det var den mindre proben.
     \\
-    Vidare har vi vid teroetiska beräkningar kommit fram till att flammtempraturen borde ligga kring 2300 K vilket skiljer sig stort från vårt uppmätta resultat. Det fins många skäl till denna diferans. Främst så mäter inte instrumentet tempraturen på flamamn utan tempraturen på proben och eftersom den strålar kommer den inte nå flammans tempratur vilket står för en diferans på mellan 100 och 200 K. Denna diferans ökar med arean av proben och $T⁴$ vilket kan ses i Figur 5 (prob B är mindre än A).
-    Utöver det har vi i teroin antagit total förbränning av reaktanterna vilket inte riktigt stämmer.
-    Dessutom har vi antagit adiabatisk reaktion vilket inte heller riktigt gäller. Utöver detta fins alltid den mänskliga faktorn, instrumetntet mäter som vi sagt tidigare endast tempraturen på proben och om den inte hunnit nå gämnvikt med flamman kommer mätvärldena vara felaktiga.
+    Vidare har vi vid teoretiska beräkningar kommit fram till att flammtemperaturen borde ligga kring 2300 K vilket skiljer sig stort från vårt uppmätta resultat. Det finns många skäl till denna differens. Främst så mäter inte instrumentet temperaturen på flamman utan temperaturen på proben och eftersom den strålar kommer den inte nå flammans temperatur vilket står för en differens på mellan 100 och 200 K. Denna differens ökar proportionellt mot $T^4$ och med arean av proben vilket kan ses i Figur \ref{fig:gamma1_och2_vid_phi} (prob B är mindre än A).
+    Utöver det har vi i teorin antagit total förbränning av reaktanterna vilket inte riktigt stämmer.
+    Dessutom har vi antagit adiabatisk reaktion vilket inte heller riktigt gäller. Utöver detta finns alltid den mänskliga faktorn, instrumetntet mäter som vi sagt tidigare endast temperaturen på proben och om den inte hunnit nå jämvikt med flamman kommer mätvärdena vara felaktiga.
     \\
-    Andra intresanta saker vi kan se är att den stokimetriska flamman ($\Phi \approx 1.0$) har högre tempratur vid $\gamma_1$ eftersom mer brensle förbräns vid flamfronten i en stökometrisk blandning än en bränslerik. Den bränslerika kommer inte förbrenans helt förän den får tillgång till mer syre vilket ger den en halo där mer energi frigörs.
-    Detta svarar på varför tempraturen först ökar när vi rör oss bort från flamfronent, se de gröan mätvärldena på figur 4, vi verkar nå ett maxima vid $\gamma_7$ eller $\gamma_8$ vilket troligtvis är var halon slutar och alltså där all energi frigjorts hoss den brenslerika blandingen.
+    Andra intressanta saker vi kan se är att den stökiometriska flamman ($\Phi \approx 1.0$) har högre temperatur vid $\gamma_1$ eftersom mer bränsle förbränns vid flammfronten i en stökiometrisk blandning än en bränslerik. Den bränslerika kommer inte förbrännans helt förrän den får tillgång till mer syre vilket ger den en halo där mer energi frigörs.
+    Detta svarar på varför temperaturen först ökar när vi rör oss bort från flammfronten, se de gröna mätvärdena på Figur \ref{fig:gamma1_till_10}, vi verkar nå ett maxima vid $\gamma_7$ eller $\gamma_8$ vilket troligtvis är var halon slutar och alltså där all energi frigjorts hos den bränslerika blandningen.
 
 
 
@@ -162,7 +163,7 @@
       Svar: Se tabell. \\
       
       \begin{center}
-        \begin{tabular}{ | m{5cm} | m{1.5cm}| m{5cm} | } 
+        \begin{longtable}{ | m{5cm} | m{1.5cm}| m{5cm} | } 
           \hline
           Avseende & Bästa mätteknik & Kommentar \\
           \hline
@@ -176,7 +177,7 @@
           \hline
           Pris & Termoelement & LASERn som användes i videon kostar flera hundra tusen kronor, och kameran som användes noterades även vara dyr. Värt att nämna dock är att dessa mätinstrument har många andra användningsområden, medan termoelement är väldigt specifikt för att mäta temperatur. \\ 
           \hline
-        \end{tabular}
+        \end{longtable}
       \end{center}     
   \end{enumerate}
 
@@ -221,7 +222,7 @@
       $$C_3H_8 + 5O_2 \rightarrow 3CO_2 + 4H_2O$$
 
       \begin{equation}
-        \Delta H = \Delta 3 H^0_f(CO_2) + 4 \Delta H^0_f(H_2O) - 5 \Delta H^0_f(O_2) - \Delta H^0_f(C_3H_8) = -2217.1 kJ
+        \Delta H = 3 \Delta H^0_f(CO_2) + 4 \Delta H^0_f(H_2O) - 5 \Delta H^0_f(O_2) - \Delta H^0_f(C_3H_8) = -2217.1 kJ
       \end{equation}
 
       Med molarmassor $m(C_3H_8) = 44g/mol$ och $m(CO_2) = 44g/mol$ får vi $44*3/44 = 3.0 kg CO_2 / kg C_3H_8$.
