@@ -1,6 +1,14 @@
-use bevy::prelude::*;
+use bevy::{
+    asset::RenderAssetUsages,
+    prelude::*,
+    render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages},
+};
 
-use crate::planet::Planet;
+use crate::{
+    consts::{HEIGHT, WIDTH},
+    planet::{Planet, PlanetRenderTexture},
+    temp::TempMap,
+};
 
 #[derive(Component, Clone, Copy)]
 pub enum ViewPoint {
@@ -13,11 +21,17 @@ pub fn solar_system_transform() -> Transform {
     Transform::from_xyz(0., 0., 30.).looking_at(Vec3::new(0., 0., 0.), Vec3::Y)
 }
 
+#[derive(Component)]
+pub struct MainCam;
+
+#[derive(Component)]
+pub struct MapCam;
+
 pub fn toggle_view(
     keyboard: Res<ButtonInput<KeyCode>>,
     mut query: Query<&mut ViewPoint>,
-    mut q3d: Query<&mut Camera, With<Camera3d>>,
-    mut q2d: Query<&mut Camera, Without<Camera3d>>,
+    mut q3d: Query<&mut Camera, With<MainCam>>,
+    mut q2d: Query<&mut Camera, (With<MapCam>, Without<MainCam>)>,
 ) {
     let mut view_point = query.single_mut().unwrap();
     if keyboard.just_pressed(KeyCode::KeyO) {
@@ -106,10 +120,11 @@ pub struct OverlayCamera2d;
 struct OverlayRoot;
 
 // Spawn cameras
-pub fn setup_cameras(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn setup_cameras(mut commands: Commands, planet_rt: Res<PlanetRenderTexture>) {
     // 3D camera
     commands.spawn((
         Camera3d::default(),
+        MainCam,
         Camera {
             is_active: true,
             ..default()
@@ -122,6 +137,7 @@ pub fn setup_cameras(mut commands: Commands, asset_server: Res<AssetServer>) {
     let cam_2d = commands
         .spawn((
             Camera2d,
+            MapCam,
             Camera {
                 order: 10,
                 is_active: false,
@@ -131,9 +147,6 @@ pub fn setup_cameras(mut commands: Commands, asset_server: Res<AssetServer>) {
         ))
         .id();
 
-    // Fullscreen image *targeted at that 2D camera*
-    let texture: Handle<Image> = asset_server.load("world.jpg");
-
     commands
         .spawn((
             Node {
@@ -141,12 +154,12 @@ pub fn setup_cameras(mut commands: Commands, asset_server: Res<AssetServer>) {
                 height: Val::Percent(100.0),
                 ..default()
             },
-            UiTargetCamera(cam_2d), // <- key line!
+            UiTargetCamera(cam_2d),
             OverlayRoot,
         ))
         .with_children(|parent| {
             parent.spawn((
-                ImageNode::new(texture),
+                ImageNode::new(planet_rt.0.clone()),
                 Node {
                     width: Val::Percent(100.0),
                     height: Val::Percent(100.0),
@@ -154,4 +167,36 @@ pub fn setup_cameras(mut commands: Commands, asset_server: Res<AssetServer>) {
                 },
             ));
         });
+}
+
+pub fn setup_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
+    // render target texture
+
+    let mut temp_vec = Vec::with_capacity(WIDTH);
+    for _ in 0..WIDTH {
+        let mut entry = Vec::new();
+        for _ in 0..HEIGHT {
+            entry.push(0.);
+        }
+        temp_vec.push(entry);
+    }
+    let mut temp_map = TempMap::new(temp_vec);
+
+    let mut img = Image::new_fill(
+        Extent3d {
+            width: WIDTH as u32,
+            height: HEIGHT as u32,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        &temp_map.get_heat_texture(|theta, phi| 1000. / (theta + phi)),
+        TextureFormat::Rgba8UnormSrgb,
+        RenderAssetUsages::default(),
+    );
+    img.texture_descriptor.usage |=
+        TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING;
+
+    commands.spawn(temp_map);
+    let rt_handle = images.add(img);
+    commands.insert_resource(PlanetRenderTexture(rt_handle));
 }

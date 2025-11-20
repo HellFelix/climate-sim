@@ -2,6 +2,9 @@ use bevy::prelude::*;
 
 use crate::consts::G;
 
+#[derive(Resource)]
+pub struct PlanetRenderTexture(pub Handle<Image>);
+
 #[derive(Component)]
 pub struct Planet {
     pub mass: f32,

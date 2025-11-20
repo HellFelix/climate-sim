@@ -1,24 +1,20 @@
 use std::f32::consts::PI;
 
-use bevy::pbr::wireframe::{WireframeConfig, WireframePlugin};
-use bevy::sprite::Material2dPlugin;
-use bevy::{
-    prelude::*,
-    render::render_resource::{Extent3d, TextureDimension, TextureFormat},
-};
-
-use crate::planet::{Planet, PlanetStats};
-use crate::view::{ViewPoint, solar_system_transform};
+use bevy::prelude::*;
 
 mod consts;
 mod planet;
-mod projection;
+use crate::planet::{Planet, PlanetRenderTexture, PlanetStats};
+mod temp;
 mod view;
 
 fn main() {
     App::new()
         .add_plugins((DefaultPlugins.set(ImagePlugin::default_nearest()),))
-        .add_systems(Startup, (setup, view::setup_cameras))
+        .add_systems(
+            Startup,
+            (view::setup_texture, setup_system, view::setup_cameras).chain(),
+        )
         .add_systems(
             Update,
             (
@@ -35,16 +31,14 @@ fn main() {
 #[derive(Component)]
 struct Star;
 
-fn setup(
+fn setup_system(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    asset_server: Res<AssetServer>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    render_tex: Res<PlanetRenderTexture>,
 ) {
-    let texture_handle = asset_server.load("world.jpg");
-
     let material_handle = materials.add(StandardMaterial {
-        base_color_texture: Some(texture_handle.clone()),
+        base_color_texture: Some(render_tex.0.clone()),
         alpha_mode: AlphaMode::Blend,
         unlit: false,
         ..default()
