@@ -5,6 +5,7 @@ use bevy::prelude::*;
 mod consts;
 mod planet;
 use crate::planet::{Planet, PlanetRenderTexture, PlanetStats};
+mod rk4;
 mod temp;
 mod view;
 
@@ -25,6 +26,8 @@ fn main() {
                 view::update_camera,
             ),
         )
+        .add_systems(FixedUpdate, temp::apply_heat_eq)
+        .insert_resource(Time::<Fixed>::from_seconds(0.1))
         .run();
 }
 

@@ -3,6 +3,7 @@ use bevy::{
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages},
 };
+use ndarray::arr2;
 
 use crate::{
     consts::{HEIGHT, WIDTH},
@@ -129,7 +130,8 @@ pub fn setup_cameras(mut commands: Commands, planet_rt: Res<PlanetRenderTexture>
             is_active: true,
             ..default()
         },
-        ViewPoint::SolarSystem, // Set to solar system by default
+        ViewPoint::Planet,
+        // ViewPoint::SolarSystem, // Set to solar system by default
         solar_system_transform(),
     ));
 
@@ -172,16 +174,17 @@ pub fn setup_cameras(mut commands: Commands, planet_rt: Res<PlanetRenderTexture>
 pub fn setup_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
     // render target texture
 
-    let mut temp_vec = Vec::with_capacity(WIDTH);
-    for _ in 0..WIDTH {
-        let mut entry = Vec::new();
-        for _ in 0..HEIGHT {
-            entry.push(0.);
-        }
-        temp_vec.push(entry);
-    }
-    let mut temp_map = TempMap::new(temp_vec);
+    // let mut temp_vec = Vec::with_capacity(WIDTH);
+    // for _ in 0..WIDTH {
+    //     let mut entry = Vec::new();
+    //     for _ in 0..HEIGHT {
+    //         entry.push(0.);
+    //     }
+    //     temp_vec.push(entry);
+    // }
+    let mut temp_map = TempMap::new(arr2(&[[0.; HEIGHT]; WIDTH]));
 
+    temp_map.set_heat(|theta, phi| 1000. / (theta + phi + 1.));
     let mut img = Image::new_fill(
         Extent3d {
             width: WIDTH as u32,
@@ -189,7 +192,7 @@ pub fn setup_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) 
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
-        &temp_map.get_heat_texture(|theta, phi| 1000. / (theta + phi)),
+        &temp_map.get_heat_texture(),
         TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::default(),
     );
