@@ -35,6 +35,12 @@ impl TempMap {
     }
 }
 
+/// Heat added from solar rays in each point where phi/theta are points
+/// Ouput size [[f32; HEIGHT]; WIDTH]
+fn heat_diff(phi: f32, theta: f32) -> Vec<Vec<f32>> {
+    unimplemented!()
+}
+
 fn clamp(x: f32, min: f32, max: f32) -> f32 {
     if x < min {
         min
