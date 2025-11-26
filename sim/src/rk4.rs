@@ -1,7 +1,10 @@
-use bevy::log::info;
+use bevy::prelude::*;
 use ndarray::{Array2, arr2};
 
 use crate::consts::{DX, DY, HEIGHT, KAPPA, WIDTH};
+
+const SIM_DT: f32 = 0.01; // stable RK4 dt
+const SPEEDUP: f32 = 5.0; // how much faster than "real" time
 
 pub fn heat_eq_step(T0: &Array2<f32>, h: f32) -> Array2<f32> {
     system_rk4_step(
@@ -12,8 +15,8 @@ pub fn heat_eq_step(T0: &Array2<f32>, h: f32) -> Array2<f32> {
                     res[[x, y]] = (T[[(x + 1) % WIDTH, y]] - 2. * T[[x, y]]
                         + T[[(x + WIDTH - 1) % WIDTH, y]])
                         / DX.powi(2)
-                        + (T[[x, (y + 1) % HEIGHT]] - 2. * T[[x, y]]
-                            + T[[x, (y + HEIGHT - 1) % HEIGHT]])
+                        + (T[[x, if y == HEIGHT - 1 { y } else { y + 1 }]] - 2. * T[[x, y]]
+                            + T[[x, if y == 0 { 0 } else { y - 1 }]])
                             / DY.powi(2);
                 }
             }

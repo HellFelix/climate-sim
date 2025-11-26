@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use bevy::{
     asset::RenderAssetUsages,
     prelude::*,
@@ -172,19 +174,9 @@ pub fn setup_cameras(mut commands: Commands, planet_rt: Res<PlanetRenderTexture>
 }
 
 pub fn setup_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
-    // render target texture
-
-    // let mut temp_vec = Vec::with_capacity(WIDTH);
-    // for _ in 0..WIDTH {
-    //     let mut entry = Vec::new();
-    //     for _ in 0..HEIGHT {
-    //         entry.push(0.);
-    //     }
-    //     temp_vec.push(entry);
-    // }
     let mut temp_map = TempMap::new(arr2(&[[0.; HEIGHT]; WIDTH]));
 
-    temp_map.set_heat(|theta, phi| 1000. / (theta + phi + 1.));
+    temp_map.set_heat(|theta, phi| if phi < PI / 2. { 200. } else { 0. });
     let mut img = Image::new_fill(
         Extent3d {
             width: WIDTH as u32,
@@ -196,8 +188,9 @@ pub fn setup_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) 
         TextureFormat::Rgba8UnormSrgb,
         RenderAssetUsages::default(),
     );
-    img.texture_descriptor.usage |=
-        TextureUsages::RENDER_ATTACHMENT | TextureUsages::TEXTURE_BINDING;
+
+    img.texture_descriptor.usage =
+        TextureUsages::TEXTURE_BINDING | TextureUsages::COPY_DST | TextureUsages::RENDER_ATTACHMENT;
 
     commands.spawn(temp_map);
     let rt_handle = images.add(img);

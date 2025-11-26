@@ -1,6 +1,10 @@
 use std::f32::consts::PI;
 
-use crate::{consts::*, planet::PlanetRenderTexture, rk4::heat_eq_step};
+use crate::{
+    consts::*,
+    planet::{Planet, PlanetRenderTexture},
+    rk4::heat_eq_step,
+};
 use bevy::prelude::*;
 use ndarray::Array2;
 
@@ -14,7 +18,7 @@ impl TempMap {
     }
 
     pub fn apply_heat_eq(&mut self) {
-        self.0 = heat_eq_step(&self.0, H);
+        self.0 = heat_eq_step(&self.0, SIM_DT);
     }
 
     // fn temp_at(&self, phi: f32, theta: f32) -> f32 {
@@ -37,7 +41,7 @@ impl TempMap {
 
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
-                let heat_color = heat_color(self.0[[x, y]], 0., 1000.);
+                let heat_color = heat_color(self.0[[x, y]], 0., 200.);
                 colors.append(&mut heat_color.to_vec());
             }
         }
@@ -48,17 +52,30 @@ impl TempMap {
 
 pub fn apply_heat_eq(
     mut images: ResMut<Assets<Image>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
     render_tex: Res<PlanetRenderTexture>,
+    planet_query: Query<&mut MeshMaterial3d<StandardMaterial>, With<Planet>>,
     mut temp_query: Query<&mut TempMap>,
 ) {
+    let mut sim_steps = SPEEDUP;
+
     let mut temp = temp_query.single_mut().unwrap();
-    temp.apply_heat_eq();
+    while sim_steps >= 1 {
+        temp.apply_heat_eq();
+        sim_steps -= 1;
+    }
 
     let image = images.get_mut(&render_tex.0).unwrap();
     if let Some(ref mut data) = image.data {
         info!("temp is {:?}", temp.0);
         let new_data = temp.get_heat_texture();
         *data = new_data;
+    }
+
+    let planet_mesh = planet_query.single().unwrap();
+    let mesh = materials.get_mut(&planet_mesh.0).unwrap();
+    if let Some(ref mut base_color_texture) = mesh.base_color_texture {
+        *base_color_texture = render_tex.0.clone();
     }
 }
 
