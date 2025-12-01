@@ -1,34 +1,91 @@
-use std::f32::consts::PI;
+use std::{env, f32::consts::PI, fs::File};
 
-use bevy::prelude::*;
+use bevy::{
+    app::{RunMode, ScheduleRunnerPlugin},
+    prelude::*,
+    render::RenderPlugin,
+    winit::WinitPlugin,
+};
+use bevy_capture::{Capture, CapturePlugin, encoder::mp4_openh264::Mp4Openh264Encoder};
 
 mod consts;
 mod planet;
-use crate::planet::{Planet, PlanetRenderTexture, PlanetStats};
+use crate::{
+    planet::{Planet, PlanetRenderTexture, PlanetStats},
+    view::SimulationSpecs,
+};
 mod rk4;
 mod temp;
 mod view;
 
 fn main() {
-    App::new()
-        .add_plugins((DefaultPlugins.set(ImagePlugin::default_nearest()),))
-        .add_systems(
-            Startup,
-            (view::setup_texture, setup_system, view::setup_cameras).chain(),
+    let mut record = false;
+    let mut args = env::args();
+    while let Some(arg) = args.next() {
+        if arg == "record" {
+            record = true;
+        }
+    }
+
+    let mut app = App::new();
+
+    if record {
+        println!("Setting record");
+        app.add_plugins((
+            DefaultPlugins
+                .set(ImagePlugin::default_nearest())
+                .set(RenderPlugin {
+                    synchronous_pipeline_compilation: true,
+                    ..default()
+                })
+                .disable::<WinitPlugin>(),
+            ScheduleRunnerPlugin {
+                run_mode: RunMode::Loop { wait: None },
+            },
+            CapturePlugin,
+        ))
+        .add_systems(Update, capture_frame);
+    } else {
+        app.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()));
+    }
+
+    app.add_systems(
+        Startup,
+        (
+            move |commands: Commands| setup_sim_specs(commands, record),
+            view::setup_texture,
+            setup_system,
+            view::setup_cameras,
         )
-        .add_systems(
-            Update,
-            (
-                planet::rotate,
-                planet::move_planet_kepler,
-                planet::update_stats,
-                view::toggle_view,
-                view::update_camera,
-            ),
-        )
-        .add_systems(FixedUpdate, temp::apply_heat_eq)
-        .insert_resource(Time::<Fixed>::from_seconds(0.1))
-        .run();
+            .chain(),
+    )
+    .add_systems(
+        Update,
+        (
+            planet::rotate,
+            planet::move_planet_kepler,
+            planet::update_stats,
+            view::toggle_view,
+            view::update_camera,
+        ),
+    )
+    .add_systems(FixedUpdate, temp::apply_heat_eq)
+    .insert_resource(Time::<Fixed>::from_seconds(0.1));
+
+    app.run();
+}
+
+fn setup_sim_specs(mut commands: Commands, record: bool) {
+    commands.spawn(SimulationSpecs { record });
+}
+
+fn capture_frame(mut capture: Query<&mut Capture>) {
+    let mut capture = capture.single_mut().unwrap();
+    if !capture.is_capturing() {
+        capture.start(
+            Mp4Openh264Encoder::new(File::create("recording.mp4").unwrap(), 3840, 2160).unwrap(),
+        );
+    }
 }
 
 #[derive(Component)]

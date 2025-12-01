@@ -13,7 +13,6 @@ use ndarray::Array2;
 pub struct TempMap(Array2<f32>); // T(x, y)
 impl TempMap {
     pub fn new(init_temp: Array2<f32>) -> Self {
-        info!("initial shape: {:?}", init_temp.shape());
         Self(init_temp)
     }
 
@@ -67,7 +66,6 @@ pub fn apply_heat_eq(
 
     let image = images.get_mut(&render_tex.0).unwrap();
     if let Some(ref mut data) = image.data {
-        info!("temp is {:?}", temp.0);
         let new_data = temp.get_heat_texture();
         *data = new_data;
     }

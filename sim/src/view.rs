@@ -5,6 +5,7 @@ use bevy::{
     prelude::*,
     render::render_resource::{Extent3d, TextureDimension, TextureFormat, TextureUsages},
 };
+use bevy_capture::{CameraTargetHeadless, CaptureBundle};
 use ndarray::arr2;
 
 use crate::{
@@ -117,35 +118,70 @@ fn set_view_free_cam(camera_transform: &mut Transform, keyboard: Res<ButtonInput
 }
 
 #[derive(Component)]
+pub struct SimulationSpecs {
+    pub record: bool,
+}
+
+#[derive(Component)]
 pub struct OverlayCamera2d;
 
 #[derive(Component)]
 struct OverlayRoot;
 
 // Spawn cameras
-pub fn setup_cameras(mut commands: Commands, planet_rt: Res<PlanetRenderTexture>) {
+pub fn setup_cameras(
+    mut commands: Commands,
+    planet_rt: Res<PlanetRenderTexture>,
+    mut images: ResMut<Assets<Image>>,
+    sim_specs_query: Query<&SimulationSpecs>,
+) {
+    let sim_specs = sim_specs_query.single().unwrap();
+
     // 3D camera
-    commands.spawn((
-        Camera3d::default(),
-        MainCam,
-        Camera {
-            is_active: true,
-            ..default()
-        },
-        ViewPoint::Planet,
-        // ViewPoint::SolarSystem, // Set to solar system by default
-        solar_system_transform(),
-    ));
+    if sim_specs.record {
+        commands.spawn((
+            Camera3d::default(),
+            MainCam,
+            Camera {
+                is_active: true,
+                ..default()
+            }
+            .target_headless(3840, 2160, &mut images),
+            CaptureBundle::default(),
+            ViewPoint::Planet,
+            solar_system_transform(),
+        ));
+    } else {
+        commands.spawn((
+            Camera3d::default(),
+            MainCam,
+            Camera {
+                is_active: true,
+                ..default()
+            },
+            ViewPoint::SolarSystem, // Set to solar system by default
+            solar_system_transform(),
+        ));
+    }
 
     // 2D overlay camera
     let cam_2d = commands
         .spawn((
             Camera2d,
             MapCam,
-            Camera {
-                order: 10,
-                is_active: false,
-                ..default()
+            if sim_specs.record {
+                Camera {
+                    order: 10,
+                    is_active: false,
+                    ..default()
+                }
+                .target_headless(3840, 2160, &mut images)
+            } else {
+                Camera {
+                    order: 10,
+                    is_active: false,
+                    ..default()
+                }
             },
             OverlayCamera2d,
         ))

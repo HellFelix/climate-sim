@@ -9,7 +9,7 @@ const CFL: f32 = 0.3;
 pub const SIM_DT: f32 = CFL * DX * DX / (KAPPA * 2.0);
 
 // Simulations consts
-pub const SPEEDUP: u32 = 2;
+pub const SPEEDUP: u32 = 10;
 
 // Projection consts
 pub const HEIGHT: usize = 51;

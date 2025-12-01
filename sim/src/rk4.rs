@@ -3,9 +3,6 @@ use ndarray::{Array2, arr2};
 
 use crate::consts::{DX, DY, HEIGHT, KAPPA, WIDTH};
 
-const SIM_DT: f32 = 0.01; // stable RK4 dt
-const SPEEDUP: f32 = 5.0; // how much faster than "real" time
-
 pub fn heat_eq_step(T0: &Array2<f32>, h: f32) -> Array2<f32> {
     system_rk4_step(
         |T| {
