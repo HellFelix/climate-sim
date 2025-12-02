@@ -14,6 +14,7 @@ use crate::{
     planet::{Planet, PlanetRenderTexture, PlanetStats},
     view::SimulationSpecs,
 };
+mod energy_in;
 mod rk4;
 mod temp;
 mod view;
