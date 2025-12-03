@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use crate::{
     consts::*,
     planet::{Planet, PlanetRenderTexture},
-    rk4::heat_eq_step,
+    rk4::{heat_eq_step, heat_eq_step_spherical},
 };
 use bevy::prelude::*;
 use ndarray::Array2;
@@ -17,7 +17,17 @@ impl TempMap {
     }
 
     pub fn apply_heat_eq(&mut self) {
-        self.0 = heat_eq_step(&self.0, SIM_DT);
+        self.0 = heat_eq_step_spherical(&self.0, SIM_DT);
+        let first_avg = self.0.column(0).iter().map(|t| *t).sum::<f32>() / WIDTH as f32;
+        self.0.column_mut(0).iter_mut().for_each(|t| *t = first_avg);
+
+        let last_avg = self.0.column(HEIGHT - 1).iter().map(|t| *t).sum::<f32>() / WIDTH as f32;
+        self.0
+            .column_mut(HEIGHT - 1)
+            .iter_mut()
+            .for_each(|t| *t = last_avg);
+
+        info!("{}", self.0.column(0));
     }
 
     // fn temp_at(&self, phi: f32, theta: f32) -> f32 {

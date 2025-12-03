@@ -1,12 +1,16 @@
+use std::f32::consts::PI;
+
 // Physical constants
 pub const G: f32 = 1.;
 
 // Heat equation consts
 pub const DX: f32 = 1.;
 pub const DY: f32 = 1.;
+pub const DTHETA: f32 = 2. * PI * DX as f32 / WIDTH as f32;
+pub const DPHI: f32 = PI * DY as f32 / HEIGHT as f32;
 pub const KAPPA: f32 = 10.;
-const CFL: f32 = 0.3;
-pub const SIM_DT: f32 = CFL * DX * DX / (KAPPA * 2.0);
+const CFL: f32 = 0.01;
+pub const SIM_DT: f32 = CFL * DPHI * DTHETA / (KAPPA * 2.0);
 
 // Simulations consts
 pub const SPEEDUP: u32 = 10;

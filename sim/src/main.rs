@@ -71,7 +71,7 @@ fn main() {
         ),
     )
     .add_systems(FixedUpdate, temp::apply_heat_eq)
-    .insert_resource(Time::<Fixed>::from_seconds(0.1));
+    .insert_resource(Time::<Fixed>::from_seconds(0.001));
 
     app.run();
 }
