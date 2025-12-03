@@ -212,7 +212,8 @@ pub fn setup_cameras(
 pub fn setup_texture(mut commands: Commands, mut images: ResMut<Assets<Image>>) {
     let mut temp_map = TempMap::new(arr2(&[[0.; HEIGHT]; WIDTH]));
 
-    temp_map.set_heat(|theta, phi| if theta < PI { 200. } else { 0. });
+    //temp_map.set_heat(|theta, _phi| if theta < PI { 200. } else { 0. });
+    temp_map.set_heat(|_theta, _phi| 0.);
     let mut img = Image::new_fill(
         Extent3d {
             width: WIDTH as u32,

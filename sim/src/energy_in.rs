@@ -1,54 +1,82 @@
-use std::f32::consts::PI;
+use std::f32::{INFINITY, consts::PI};
 
-use crate::consts::*;
+use crate::{consts::*, planet::Planet, temp::TempMap};
 
-fn vector_from_cord(x: usize, y: usize) -> [f32; 3] {
-    let u = (x as f32 + 0.5) / WIDTH as f32;
-    let v = (y as f32 + 0.5) / HEIGHT as f32;
+use bevy::prelude::*;
+use ndarray::{Array2, arr2};
 
-    let lambda: f32 = (u - 0.5) * 2. * PI;
-    let phi: f32 = (0.5 - v) * PI;
-    let vec = [
-        phi.cos() * lambda.cos(),
-        phi.cos() * lambda.sin(),
-        phi.sin(),
-    ];
-    return vec;
+pub fn apply_heat_in(
+    planet_query: Query<&Transform, With<Planet>>,
+    mut temp_map_query: Query<&mut TempMap>,
+) {
+    let planet_transform = planet_query.single().unwrap();
+    let mut temp_map = temp_map_query.single_mut().unwrap();
+
+    // calculate from planet's frame of reference
+    let center = planet_transform.translation;
+
+    let origin_normal = (Vec3::ZERO - center).normalize();
+
+    // Quaternion transformation into local reference frame
+    let local_origin_normal = (planet_transform.rotation.conjugate() * origin_normal).normalize();
+
+    // Calculation for coordinates in heat map plane
+    // let theta = local_origin_normal.y.atan2(local_origin_normal.x);
+    // let phi = (local_origin_normal.z / 1.).clamp(-1., 1.).acos();
+    // let (x, y) = spherical_convert_nearest_coord(theta, phi);
+
+    let flux = flux_pp(local_origin_normal);
+
+    // info!("{flux}");
+    // info!(
+    //     "{}",
+    //     flux.iter()
+    //         .max_by(|a, b| a.partial_cmp(&b).unwrap())
+    //         .unwrap()
+    // );
+
+    temp_map.add_heat(flux);
 }
 
-pub fn my_f(point: [f32; 3], zenit: [f32; 3]) -> f32 {
-    let my: f32 = point[0] * zenit[0] + point[1] * zenit[1] + point[2] * zenit[2];
-    return my;
+fn spherical_convert_nearest_coord(theta: f32, phi: f32) -> (usize, usize) {
+    (
+        (WIDTH as f32 * (if theta >= 0. { theta } else { 2. * PI + theta }) / (2. * PI)).floor()
+            as usize,
+        (HEIGHT as f32 * phi / PI).floor() as usize,
+    )
 }
 
-pub fn transmition_f(my: f32) -> f32 {
-    let omega: f32 = 0.98;
-    let tao: f32 = 0.3;
-    let M_eff: f32 = 1.7; //Airmass
-    let C_diff: f32 = (omega * tao * M_eff) / 2.;
-    return C_diff + (-tao / my).exp();
+// There's no way this should be > 1...
+pub fn transmission_f(mu: f32) -> f32 {
+    // Assuming mu is negative (clamped to 0)
+    if mu > 0. {
+        C_DIFF + (-TAU / mu).exp()
+    } else {
+        0.
+    }
 }
 
-pub fn flux(my: f32) -> f32 {
-    let solar_constant: f32 = 1.3608;
-    let ro: f32 = 0.05;
-    let r: f32 = 0.08;
-    return (solar_constant * my * transmition_f(my)) / (1.0 - ro * r);
+fn vector_from_coord(x: usize, y: usize) -> Vec3 {
+    let r = 1.;
+    let theta = (2. * PI / WIDTH as f32) * x as f32;
+    let phi = (PI / HEIGHT as f32) * y as f32;
+
+    Vec3 {
+        x: r * phi.sin() * theta.cos(),
+        y: r * phi.sin() * theta.sin(),
+        z: r * phi.cos(),
+    }
 }
 
-pub fn flux_pp(xy_sun: [f32; 2]) -> Vec<Vec<f32>> {
-    let senit: [f32; 3] = vector_from_cord(xy_sun[0] as usize, xy_sun[1] as usize);
-    let mut heat_matrix = vec![vec![0.0_f32; WIDTH]; HEIGHT];
-
-    for y in 0..HEIGHT {
-        for x in 0..WIDTH {
-            let mut point: [f32; 3] = vector_from_cord(0, 0);
-
-            point = vector_from_cord(x, y);
-
-            let my: f32 = my_f(point, senit);
-            let flux_pp: f32 = flux(my);
-            heat_matrix[y][x] = flux_pp;
+pub fn flux_pp(zenit: Vec3) -> Array2<f32> {
+    let mut heat_matrix = arr2(&[[0.; HEIGHT]; WIDTH]);
+    for x in 0..WIDTH {
+        for y in 0..HEIGHT {
+            let coord_vec = vector_from_coord(x, y);
+            let mu = coord_vec.dot(zenit).clamp(0., INFINITY);
+            let transmission = transmission_f(mu);
+            let flux = (SOLAR_CONSTANT * mu * transmission) / (1.0 - RHO * R);
+            heat_matrix[[x, y]] = flux;
         }
     }
     return heat_matrix;

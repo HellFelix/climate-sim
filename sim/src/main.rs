@@ -65,13 +65,15 @@ fn main() {
         (
             planet::rotate,
             planet::move_planet_kepler,
+            temp::apply_temp_image,
             planet::update_stats,
             view::toggle_view,
             view::update_camera,
         ),
     )
     .add_systems(FixedUpdate, temp::apply_heat_eq)
-    .insert_resource(Time::<Fixed>::from_seconds(0.001));
+    .add_systems(FixedUpdate, energy_in::apply_heat_in)
+    .insert_resource(Time::<Fixed>::from_seconds(0.01));
 
     app.run();
 }

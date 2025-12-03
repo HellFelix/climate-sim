@@ -3,7 +3,7 @@ use std::f32::consts::PI;
 use crate::{
     consts::*,
     planet::{Planet, PlanetRenderTexture},
-    rk4::{heat_eq_step, heat_eq_step_spherical},
+    rk4::heat_eq_step_spherical,
 };
 use bevy::prelude::*;
 use ndarray::Array2;
@@ -30,9 +30,19 @@ impl TempMap {
         info!("{}", self.0.column(0));
     }
 
+    pub fn set_at(&mut self, x: usize, y: usize, t: f32) {
+        self.0[[x, y]] = t;
+    }
+
+    pub fn add_heat(&mut self, rhs: Array2<f32>) {
+        //self.0 = rhs;
+        self.0.scaled_add(1., &rhs);
+    }
+
     // fn temp_at(&self, phi: f32, theta: f32) -> f32 {
     //     self.0[(phi * WIDTH as f32) as usize][(theta * HEIGHT as f32) as usize]
     // }
+
     pub fn set_heat(&mut self, f: fn(f32, f32) -> f32) {
         for y in 0..HEIGHT {
             for x in 0..WIDTH {
@@ -45,7 +55,7 @@ impl TempMap {
         }
     }
 
-    pub fn get_heat_texture(&mut self) -> Vec<u8> {
+    pub fn get_heat_texture(&self) -> Vec<u8> {
         let mut colors = Vec::new();
 
         for y in 0..HEIGHT {
@@ -59,13 +69,7 @@ impl TempMap {
     }
 }
 
-pub fn apply_heat_eq(
-    mut images: ResMut<Assets<Image>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-    render_tex: Res<PlanetRenderTexture>,
-    planet_query: Query<&mut MeshMaterial3d<StandardMaterial>, With<Planet>>,
-    mut temp_query: Query<&mut TempMap>,
-) {
+pub fn apply_heat_eq(mut temp_query: Query<&mut TempMap>) {
     let mut sim_steps = SPEEDUP;
 
     let mut temp = temp_query.single_mut().unwrap();
@@ -73,6 +77,16 @@ pub fn apply_heat_eq(
         temp.apply_heat_eq();
         sim_steps -= 1;
     }
+}
+
+pub fn apply_temp_image(
+    mut images: ResMut<Assets<Image>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    render_tex: Res<PlanetRenderTexture>,
+    planet_query: Query<&mut MeshMaterial3d<StandardMaterial>, With<Planet>>,
+    temp_query: Query<&TempMap>,
+) {
+    let temp = temp_query.single().unwrap();
 
     let image = images.get_mut(&render_tex.0).unwrap();
     if let Some(ref mut data) = image.data {
@@ -85,12 +99,6 @@ pub fn apply_heat_eq(
     if let Some(ref mut base_color_texture) = mesh.base_color_texture {
         *base_color_texture = render_tex.0.clone();
     }
-}
-
-/// Heat added from solar rays in each point where phi/theta are points
-/// Ouput size [[f32; HEIGHT]; WIDTH]
-fn heat_diff(phi: f32, theta: f32) -> Vec<Vec<f32>> {
-    unimplemented!()
 }
 
 fn clamp(x: f32, min: f32, max: f32) -> f32 {

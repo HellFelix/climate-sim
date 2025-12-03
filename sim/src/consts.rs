@@ -18,10 +18,13 @@ pub const SPEEDUP: u32 = 10;
 // Projection consts
 pub const HEIGHT: usize = 51;
 pub const WIDTH: usize = 161; // Should be about PI times larger than HEIGHT!
-pub const HEIGHT_AS_F32: f32 = 51.;
-pub const WIDTH_AS_F32: f32 = 161.;
 
-// radius of the world used as a scaling factor in calculations.
-pub fn world_r() -> f32 {
-    (HEIGHT_AS_F32.powi(2) + WIDTH_AS_F32.powi(2)).sqrt()
-}
+// Physics consts
+pub const RHO: f32 = 0.05;
+pub const R: f32 = 0.08;
+
+pub const SOLAR_CONSTANT: f32 = 0.1; // 1.3608;
+pub const OMEGA: f32 = 0.98; // spridning/(spridning + absorbtion)
+pub const TAU: f32 = 0.3; // Optical Depth
+pub const M_EFF: f32 = 1.7; // Airmass
+pub const C_DIFF: f32 = OMEGA * TAU * M_EFF / 2.;
