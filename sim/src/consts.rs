@@ -28,3 +28,9 @@ pub const OMEGA: f32 = 0.98; // spridning/(spridning + absorbtion)
 pub const TAU: f32 = 0.3; // Optical Depth
 pub const M_EFF: f32 = 1.7; // Airmass
 pub const C_DIFF: f32 = OMEGA * TAU * M_EFF / 2.;
+
+// Black body radiation
+pub const EPS: f32 = 1.;
+pub const SIGMA: f32 = 1e-7;
+pub const DA: f32 = DPHI * DTHETA; // This isn't quite right
+pub const C: f32 = 1.;

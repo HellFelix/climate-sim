@@ -14,7 +14,7 @@ use crate::{
     planet::{Planet, PlanetRenderTexture, PlanetStats},
     view::SimulationSpecs,
 };
-mod energy_in;
+mod energy_diff;
 mod rk4;
 mod temp;
 mod view;
@@ -72,7 +72,8 @@ fn main() {
         ),
     )
     .add_systems(FixedUpdate, temp::apply_heat_eq)
-    .add_systems(FixedUpdate, energy_in::apply_heat_in)
+    .add_systems(FixedUpdate, energy_diff::apply_heat_in)
+    .add_systems(FixedUpdate, energy_diff::apply_black_body_radiation)
     .insert_resource(Time::<Fixed>::from_seconds(0.01));
 
     app.run();

@@ -68,7 +68,7 @@ fn vector_from_coord(x: usize, y: usize) -> Vec3 {
     }
 }
 
-pub fn flux_pp(zenit: Vec3) -> Array2<f32> {
+fn flux_pp(zenit: Vec3) -> Array2<f32> {
     let mut heat_matrix = arr2(&[[0.; HEIGHT]; WIDTH]);
     for x in 0..WIDTH {
         for y in 0..HEIGHT {
@@ -80,4 +80,9 @@ pub fn flux_pp(zenit: Vec3) -> Array2<f32> {
         }
     }
     return heat_matrix;
+}
+
+pub fn apply_black_body_radiation(mut temp_map_query: Query<&mut TempMap>) {
+    let mut temp_map = temp_map_query.single_mut().unwrap();
+    temp_map.radiate_black_body();
 }

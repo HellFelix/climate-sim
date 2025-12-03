@@ -55,6 +55,15 @@ impl TempMap {
         }
     }
 
+    pub fn radiate_black_body(&mut self) {
+        for x in 0..WIDTH {
+            for y in 0..HEIGHT {
+                let t = self.0[[x, y]];
+                self.0[[x, y]] -= t.powi(4) * EPS * SIGMA * DA / C;
+            }
+        }
+    }
+
     pub fn get_heat_texture(&self) -> Vec<u8> {
         let mut colors = Vec::new();
 
