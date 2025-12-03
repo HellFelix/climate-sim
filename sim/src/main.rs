@@ -11,6 +11,7 @@ use bevy_capture::{Capture, CapturePlugin, encoder::mp4_openh264::Mp4Openh264Enc
 mod consts;
 mod planet;
 use crate::{
+    consts::UNIVERSAL_UPDATE_RATE,
     planet::{Planet, PlanetRenderTexture, PlanetStats},
     view::SimulationSpecs,
 };
@@ -63,18 +64,24 @@ fn main() {
     .add_systems(
         Update,
         (
-            planet::rotate,
-            planet::move_planet_kepler,
             temp::apply_temp_image,
             planet::update_stats,
             view::toggle_view,
             view::update_camera,
         ),
     )
-    .add_systems(FixedUpdate, temp::apply_heat_eq)
-    .add_systems(FixedUpdate, energy_diff::apply_heat_in)
-    .add_systems(FixedUpdate, energy_diff::apply_black_body_radiation)
-    .insert_resource(Time::<Fixed>::from_seconds(0.01));
+    // Systems on fixed clock! Only update on UNIVERSAL_UPDATE_RATE.
+    .add_systems(
+        FixedUpdate,
+        (
+            planet::move_planet,
+            planet::rotate,
+            temp::apply_heat_eq,
+            energy_diff::apply_heat_in,
+            energy_diff::apply_black_body_radiation,
+        ),
+    )
+    .insert_resource(Time::<Fixed>::from_seconds(UNIVERSAL_UPDATE_RATE));
 
     app.run();
 }
