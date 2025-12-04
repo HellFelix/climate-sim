@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use bevy::{
     asset::RenderAssetUsages,
     prelude::*,
@@ -9,7 +7,7 @@ use bevy_capture::{CameraTargetHeadless, CaptureBundle};
 use ndarray::arr2;
 
 use crate::{
-    consts::{HEIGHT, WIDTH},
+    consts::{HEIGHT, ROTATION_SPEED, TRANSLATION_SPEED, WIDTH},
     planet::{Planet, PlanetRenderTexture},
     temp::TempMap,
 };
@@ -17,7 +15,7 @@ use crate::{
 #[derive(Component, Clone, Copy)]
 pub enum ViewPoint {
     SolarSystem,
-    Planet,
+    Planet(Vec3),
     FreeCam,
 }
 
@@ -41,7 +39,7 @@ pub fn toggle_view(
     if keyboard.just_pressed(KeyCode::KeyO) {
         *view_point = ViewPoint::SolarSystem;
     } else if keyboard.just_pressed(KeyCode::KeyP) {
-        *view_point = ViewPoint::Planet;
+        *view_point = ViewPoint::Planet(5. * Vec3::X);
     } else if keyboard.just_pressed(KeyCode::KeyF) {
         *view_point = ViewPoint::FreeCam;
     } else if keyboard.just_pressed(KeyCode::KeyM) {
@@ -57,63 +55,100 @@ pub fn toggle_view(
     }
 }
 
+pub fn physics_control(keyboard: Res<ButtonInput<KeyCode>>, mut time: ResMut<Time<Virtual>>) {
+    if keyboard.just_pressed(KeyCode::Escape) {
+        if time.is_paused() {
+            time.unpause();
+        } else {
+            time.pause();
+        }
+    }
+}
+
 pub fn update_camera(
-    mut camera_query: Query<(&mut Transform, &ViewPoint), Without<Planet>>,
+    mut camera_query: Query<(&mut Transform, &mut ViewPoint), Without<Planet>>,
     keyboard: Res<ButtonInput<KeyCode>>,
     planet_query: Query<&Transform, With<Planet>>,
 ) {
     let (mut camera_transform, view_point) = camera_query.single_mut().unwrap();
     let planet_transform = planet_query.single().unwrap();
 
-    match view_point {
+    match view_point.into_inner() {
         ViewPoint::SolarSystem => {
             *camera_transform = solar_system_transform();
         }
-        ViewPoint::Planet => set_view_planet(&mut camera_transform, planet_transform),
+        &mut ViewPoint::Planet(ref mut offset) => {
+            set_view_planet(&mut camera_transform, planet_transform, keyboard, offset)
+        }
         ViewPoint::FreeCam => set_view_free_cam(&mut camera_transform, keyboard),
     }
 }
 
-fn set_view_planet(camera_transform: &mut Transform, planet_transform: &Transform) {
-    camera_transform.translation = planet_transform.translation;
-    camera_transform.translation.x -= 5.;
+fn set_view_planet(
+    camera_transform: &mut Transform,
+    planet_transform: &Transform,
+    keyboard: Res<ButtonInput<KeyCode>>,
+    offset: &mut Vec3,
+) {
+    camera_transform.translation = planet_transform.translation - *offset;
+
+    let translation = if keyboard.pressed(KeyCode::ShiftLeft) {
+        -offset.normalize() * TRANSLATION_SPEED
+    } else if keyboard.pressed(KeyCode::Space) {
+        offset.normalize() * TRANSLATION_SPEED
+    } else {
+        Vec3::ZERO
+    };
+
+    *offset += translation;
+
+    let rotation = if keyboard.pressed(KeyCode::ArrowRight) {
+        Quat::from_axis_angle(camera_transform.up().as_vec3(), ROTATION_SPEED)
+    } else if keyboard.pressed(KeyCode::ArrowLeft) {
+        Quat::from_axis_angle(camera_transform.down().as_vec3(), ROTATION_SPEED)
+    } else if keyboard.pressed(KeyCode::ArrowUp) {
+        Quat::from_axis_angle(camera_transform.left().as_vec3(), ROTATION_SPEED)
+    } else if keyboard.pressed(KeyCode::ArrowDown) {
+        Quat::from_axis_angle(camera_transform.right().as_vec3(), ROTATION_SPEED)
+    } else {
+        Quat::IDENTITY
+    };
+
+    *offset = rotation * *offset;
 
     camera_transform.look_at(planet_transform.translation, Vec3::Z);
 }
 
 fn set_view_free_cam(camera_transform: &mut Transform, keyboard: Res<ButtonInput<KeyCode>>) {
-    let translation_speed = 0.1;
-    let rotation_speed = 0.02;
-
     // Translations
     if keyboard.pressed(KeyCode::KeyW) {
-        let step = camera_transform.forward().as_vec3().normalize() * translation_speed;
+        let step = camera_transform.forward().as_vec3().normalize() * TRANSLATION_SPEED;
         camera_transform.translation += step;
     } else if keyboard.pressed(KeyCode::KeyS) {
-        let step = camera_transform.back().as_vec3().normalize() * translation_speed;
+        let step = camera_transform.back().as_vec3().normalize() * TRANSLATION_SPEED;
         camera_transform.translation += step;
     } else if keyboard.pressed(KeyCode::KeyD) {
-        let step = camera_transform.right().as_vec3().normalize() * translation_speed;
+        let step = camera_transform.right().as_vec3().normalize() * TRANSLATION_SPEED;
         camera_transform.translation += step;
     } else if keyboard.pressed(KeyCode::KeyA) {
-        let step = camera_transform.left().as_vec3().normalize() * translation_speed;
+        let step = camera_transform.left().as_vec3().normalize() * TRANSLATION_SPEED;
         camera_transform.translation += step;
     } else if keyboard.pressed(KeyCode::Space) {
-        let step = camera_transform.up().as_vec3().normalize() * translation_speed;
+        let step = camera_transform.up().as_vec3().normalize() * TRANSLATION_SPEED;
         camera_transform.translation += step;
     } else if keyboard.pressed(KeyCode::ShiftLeft) {
-        let step = camera_transform.down().as_vec3().normalize() * translation_speed;
+        let step = camera_transform.down().as_vec3().normalize() * TRANSLATION_SPEED;
         camera_transform.translation += step;
     }
     // Rotations
     else if keyboard.pressed(KeyCode::ArrowUp) {
-        camera_transform.rotate_axis(camera_transform.right(), rotation_speed);
+        camera_transform.rotate_axis(camera_transform.right(), ROTATION_SPEED);
     } else if keyboard.pressed(KeyCode::ArrowDown) {
-        camera_transform.rotate_axis(camera_transform.left(), rotation_speed);
+        camera_transform.rotate_axis(camera_transform.left(), ROTATION_SPEED);
     } else if keyboard.pressed(KeyCode::ArrowRight) {
-        camera_transform.rotate_axis(camera_transform.down(), rotation_speed);
+        camera_transform.rotate_axis(camera_transform.down(), ROTATION_SPEED);
     } else if keyboard.pressed(KeyCode::ArrowLeft) {
-        camera_transform.rotate_axis(camera_transform.up(), rotation_speed);
+        camera_transform.rotate_axis(camera_transform.up(), ROTATION_SPEED);
     }
 }
 
@@ -148,7 +183,7 @@ pub fn setup_cameras(
             }
             .target_headless(3840, 2160, &mut images),
             CaptureBundle::default(),
-            ViewPoint::Planet,
+            ViewPoint::Planet(5. * Vec3::X),
             solar_system_transform(),
         ));
     } else {

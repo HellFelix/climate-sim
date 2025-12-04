@@ -4,8 +4,11 @@ use std::f32::consts::PI;
 pub const UNIVERSAL_UPDATE_RATE: f64 = 0.01;
 pub const SPEEDUP: u32 = 10;
 
-// Planet consts
+// Control consts
+pub const TRANSLATION_SPEED: f32 = 0.1;
+pub const ROTATION_SPEED: f32 = 0.02;
 
+// Planet consts
 pub const PERIOD_TIME: f32 = 10.;
 pub const N: f32 = 2. * PI / PERIOD_TIME;
 pub const PER_TIME: f32 = 0.;

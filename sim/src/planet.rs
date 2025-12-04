@@ -52,8 +52,6 @@ fn reduce(m: f32) -> f32 {
 fn mikkola_approximation(t: f32) -> f32 {
     let m = reduce(N * (t - PER_TIME));
 
-    println!("{m}");
-
     let alpha = (1. - E) / (4. * E + 0.5);
     let beta = 0.5 * m / (4. * E + 0.5);
 

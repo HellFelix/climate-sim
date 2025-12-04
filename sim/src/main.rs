@@ -68,6 +68,7 @@ fn main() {
             planet::update_stats,
             view::toggle_view,
             view::update_camera,
+            view::physics_control,
         ),
     )
     // Systems on fixed clock! Only update on UNIVERSAL_UPDATE_RATE.
