@@ -41,16 +41,19 @@ pub fn move_planet(mut planet_query: Query<(&mut Transform, &mut Planet)>) {
 fn mikkola_approximation(t: f32) -> f32 {
     let m = N * (t - PER_TIME);
 
-    let alpha = 3. * (1. - E) / (1. + E);
-    let beta = m / (1. + E);
+    let alpha = (1. - E) / (4. * E + 0.5);
+    let beta = 0.5 * m / (4. * E + 0.5);
 
-    let b = (beta + (beta.powi(2) + alpha.powi(3)).sqrt()).powf(1. / 3.);
+    let z = if beta.is_sign_negative() {
+        (beta - (beta.powi(2) + alpha.powi(3)).sqrt()).powf(1. / 3.)
+    } else {
+        (beta + (beta.powi(2) + alpha.powi(3)).sqrt()).powf(1. / 3.)
+    };
 
-    // Solve quadratic
-    let z = b - alpha / b;
+    let s = z - alpha / z;
 
     // Approximate eccentric anomaly
-    let mut res = m + E * (3. * z - 4. * z.powi(3));
+    let mut res = m + E * (3. * s - 4. * s.powi(3));
 
     // One Newton refinement
     res -= (res - E * res.sin() - m) / (1. - E * res.sin());
