@@ -22,8 +22,8 @@ mod view;
 
 fn main() {
     let mut record = false;
-    let mut args = env::args();
-    while let Some(arg) = args.next() {
+    let args = env::args();
+    for arg in args {
         if arg == "record" {
             record = true;
         }

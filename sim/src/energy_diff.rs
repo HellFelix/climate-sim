@@ -1,4 +1,4 @@
-use std::f32::{INFINITY, consts::PI};
+use std::f32::consts::PI;
 
 use crate::{consts::*, planet::Planet, temp::TempMap};
 
@@ -38,13 +38,14 @@ pub fn apply_heat_in(
     temp_map.add_heat(flux);
 }
 
-fn spherical_convert_nearest_coord(theta: f32, phi: f32) -> (usize, usize) {
-    (
-        (WIDTH as f32 * (if theta >= 0. { theta } else { 2. * PI + theta }) / (2. * PI)).floor()
-            as usize,
-        (HEIGHT as f32 * phi / PI).floor() as usize,
-    )
-}
+// helper function for calculating nearest approxiamte coordinate in the matrix
+// fn spherical_convert_nearest_coord(theta: f32, phi: f32) -> (usize, usize) {
+//     (
+//         (WIDTH as f32 * (if theta >= 0. { theta } else { 2. * PI + theta }) / (2. * PI)).floor()
+//             as usize,
+//         (HEIGHT as f32 * phi / PI).floor() as usize,
+//     )
+// }
 
 // There's no way this should be > 1...
 pub fn transmission_f(mu: f32) -> f32 {
@@ -73,13 +74,13 @@ fn flux_pp(zenit: Vec3) -> Array2<f32> {
     for x in 0..WIDTH {
         for y in 0..HEIGHT {
             let coord_vec = vector_from_coord(x, y);
-            let mu = coord_vec.dot(zenit).clamp(0., INFINITY);
+            let mu = coord_vec.dot(zenit).clamp(0., f32::INFINITY);
             let transmission = transmission_f(mu);
             let flux = (SOLAR_CONSTANT * mu * transmission) / (1.0 - RHO * R);
             heat_matrix[[x, y]] = flux;
         }
     }
-    return heat_matrix;
+    heat_matrix
 }
 
 pub fn apply_black_body_radiation(mut temp_map_query: Query<&mut TempMap>) {

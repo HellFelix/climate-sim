@@ -18,18 +18,14 @@ impl TempMap {
 
     pub fn apply_heat_eq(&mut self) {
         self.0 = heat_eq_step_spherical(&self.0, DIFFUSION_DT);
-        let first_avg = self.0.column(0).iter().map(|t| *t).sum::<f32>() / WIDTH as f32;
+        let first_avg = self.0.column(0).iter().cloned().sum::<f32>() / WIDTH as f32;
         self.0.column_mut(0).iter_mut().for_each(|t| *t = first_avg);
 
-        let last_avg = self.0.column(HEIGHT - 1).iter().map(|t| *t).sum::<f32>() / WIDTH as f32;
+        let last_avg = self.0.column(HEIGHT - 1).iter().cloned().sum::<f32>() / WIDTH as f32;
         self.0
             .column_mut(HEIGHT - 1)
             .iter_mut()
             .for_each(|t| *t = last_avg);
-    }
-
-    pub fn set_at(&mut self, x: usize, y: usize, t: f32) {
-        self.0[[x, y]] = t;
     }
 
     pub fn add_heat(&mut self, rhs: Array2<f32>) {
@@ -37,6 +33,10 @@ impl TempMap {
         self.0.scaled_add(1., &rhs);
     }
 
+    // Helper functions that may be needed
+    // pub fn set_at(&mut self, x: usize, y: usize, t: f32) {
+    //     self.0[[x, y]] = t;
+    // }
     // fn temp_at(&self, phi: f32, theta: f32) -> f32 {
     //     self.0[(phi * WIDTH as f32) as usize][(theta * HEIGHT as f32) as usize]
     // }
