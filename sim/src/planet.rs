@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use bevy::prelude::*;
 
 use crate::consts::*;
@@ -38,17 +40,24 @@ pub fn move_planet(mut planet_query: Query<(&mut Transform, &mut Planet)>) {
     transform.translation.y = A * (1. - E.powi(2)).sqrt() * ecc_anom.sin();
 }
 
+fn reduce(m: f32) -> f32 {
+    let reduced_m = m % (2. * PI);
+    if reduced_m < PI {
+        reduced_m
+    } else {
+        reduced_m - 2. * PI
+    }
+}
+
 fn mikkola_approximation(t: f32) -> f32 {
-    let m = N * (t - PER_TIME);
+    let m = reduce(N * (t - PER_TIME));
+
+    println!("{m}");
 
     let alpha = (1. - E) / (4. * E + 0.5);
     let beta = 0.5 * m / (4. * E + 0.5);
 
-    let z = if beta.is_sign_negative() {
-        (beta - (beta.powi(2) + alpha.powi(3)).sqrt()).powf(1. / 3.)
-    } else {
-        (beta + (beta.powi(2) + alpha.powi(3)).sqrt()).powf(1. / 3.)
-    };
+    let z = (beta + (beta.powi(2) + alpha.powi(3)).sqrt()).powf(1. / 3.);
 
     let s = z - alpha / z;
 
