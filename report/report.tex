@@ -3,6 +3,8 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 
+\usepackage[backend=biber,style=numeric]{biblatex}
+\addbibresource{refs.bib}
 \title{Simplified Climate Simulation}
 \author{
     Felix Hellborg,
@@ -15,7 +17,17 @@
 }
 \begin{document}
   \maketitle
+  
+  \section{Simulation}
+  The simulation built during this project is written in Rust using the Bevy game engine.
+  
+  \subsection{Units}
+  For the purposes of this project, the units of measurements are not the regular SI-units. Because we're interested in the trends, and the relationships between parameters and outcomes, the values of the simulation parameters have been set such that they yield interesting and realistic results with respect to internal consistency (within the units of measurements we're using, whatever they may be).
 
+  When in the course of reading this report, the reader comes across the usage of distance units [D.U.] or temperature units [T.U.], they should be imagined as corresponding to meters [m] and Kelvin [K] respectively with some arbitrary scaling factor. Note that temperature will always be given in an absolute scale (i.e. starting at zero).
+
+  The visual representation should not be thought of as having a realistic scale. The size of a planet with respect to the distance to its host star is so small as to be impossible to see in a realistic relative scale. The same thing is true for the relative difference in size between the planet and the host star itself (the diameter ratio between the earth and the sun is roughly 110:1 \cite{wikisun}).
+  
   \section{Solar System}
   The solar system model used in the simulation is a simplified model of our own solar system, consisting of only one planet. The parameters of the planet's orbit can be set arbitrarily, including period time $T$, time at perihelion $\tau_p$, eccentricity $e$. The planet's motion relative to the star (always located at the origin) adheres to Kepler's laws of planetary motion:
   $$x = a(\cos E - e)$$
@@ -33,14 +45,14 @@
   
   \section{Heat Equation}
 
-  
-  \begin{equation}
-    \frac{\partial T}{\partial t} = \kappa\nabla^2 T = \kappa(\frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2})
-    \label{eq: Heat Equation}
-  \end{equation}
+  The heat equation on a flat cartesian plane can be written as \cite{wikiheat}
+  $$
+    \partial_t T = \kappa\nabla^2 T = \kappa(\partial^2_{xx} T + \partial^2_{yy} T)
+  $$
+  where $\nabla^2$ denotes the Laplacian. In section \ref{sphere-coords}, we will generalize the heat equation further to be defined on a spherical surface using the Laplace-Beltrami operator. For now, however, we will use the simplest possible geometry to discuss how we can simulate heat diffusion in a discrete system.
 
   \subsection{Runge-Kutta Methods}
-  Assuming we have discretesized the map into a heat matrix T at some time $t$ of size $i\cdot j$, we can solve for T at time (t+h) using a system of RK4 calculations.
+  Assuming we have discretesized the map into a heat matrix T at some time $t$, we can solve for T at time (t+h) using a system of RK4 calculations \cite{originalkutta} \cite{wikikutta}.
 
   Given an equation
   \begin{equation}
@@ -77,15 +89,15 @@
   Note that for partial differential equations, we must also discretesize (approximate) derivatives as follows:
 
   \begin{equation}
-    \frac{\partial^2 a_{ij}}{\partial x^2} \approx \frac{-a_{i(j+1)} + 2a_{ij} - a_{i(j-1)}}{(\Delta x)^2}
+    \partial^2_{x^ix^i} a_{ij} \approx \frac{-a_{i(j+1)} + 2a_{ij} - a_{i(j-1)}}{(\Delta x)^2}
   \end{equation}
- 
-  \begin{equation}
-    \frac{\partial^2 a_{ij}}{\partial y^2} \approx \frac{-a_{(i+1)j} + 2a_{ij} - a_{(i-1)j}}{(\Delta y)^2}
-  \end{equation} 
 
-  \subsection{Spherical Coordinates}
-  In the beginning of this chapter, we wrote the heat equation using the Laplace operator $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Reimann manifold where the interval is
+  Here, $\partial^2_{x^kx^k} a_{ij}$ denotes the second derivative of element $a_{ij}$ with respect to coordinate $x^k$.
+
+  
+
+  \subsection{Spherical Coordinates}\label{sphere-coords}
+  In the beginning of this chapter, we wrote the heat equation using the Laplacian $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Reimann manifold where the interval is
   $$ds^2 = dx^2 + dy^2.$$
 
   In general, we define the metric tensor on a manifold through the interval
@@ -94,10 +106,10 @@
 
   The heat equation then becomes
   \begin{equation}
-    \frac{\partial T}{\partial t} = \kappa \Delta_g T
+    \partial_t T = \kappa \Delta_g T
     \label{eq:General-Heat-Eq}
   \end{equation}
-  where $\Delta_g$ denotes the Laplace-Beltrami which, when applied to some scalar function $f$, yields
+  where $\Delta_g$ denotes the Laplace-Beltrami operator which, when applied to some scalar function $f$, yields \cite{wikilaplace}
   \begin{equation}
     \Delta_g f = \frac{1}{\sqrt{|g|}} \partial_i(\sqrt{|g|}g^{ij}\partial_j f).
     \label{eq:Laplace-Beltrami}
@@ -113,10 +125,10 @@
   $$
   and $|g|$ is $1$. Thus, we can calculate $\Delta_g f$ from equation \ref{eq:Laplace-Beltrami} as
   
-  $$\Delta_g f = \frac{\partial^2 f}{\partial (x^1)^2} + \frac{\partial^2 f}{\partial (x^2)^2}$$
+  $$\Delta_g f = \partial^2_{x^1x^1} f + \partial^2_{x^2x^2} f$$
   or in cartesian coordinates
   
-  $$\Delta_g f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2}$$
+  $$\Delta_g f = \partial^2_{xx} f + \partial^2_{yy} f.$$
 
   We're interested in the $S^2$ Riemann manifold where 
 
@@ -124,7 +136,7 @@
   \begin{pmatrix}
     R^2 & 0 \\
     0 & R^2\sin^2{\theta}
-  \end{pmatrix}
+  \end{pmatrix}.
   $$
   Because
   $$g_{ij} = 0 \quad \forall \quad i \neq j$$
@@ -135,21 +147,21 @@
   
   From equation \ref{eq:Laplace-Beltrami}, we find 
 
-  $$\Delta_{S^2}f = \frac{1}{R^2\sin{\theta}}(\frac{\partial}{\partial \theta}(R^2\sin{\theta}(g^{\theta\theta}\frac{\partial f}{\partial\theta})) + (\frac{\partial}{\partial \phi}R^2\sin{\theta}(g^{\phi\phi}\frac{\partial f}{\partial\phi}))).$$
+  $$\Delta_{S^2}f = \frac{1}{R^2\sin{\theta}}(\partial_\theta(R^2\sin{\theta}(g^{\theta\theta}\partial_\theta f)) + (\partial_\phi R^2\sin{\theta}(g^{\phi\phi}\partial_\phi f))).$$
   Here, we've used the fact that $g^{\theta\phi}=g^{\phi\theta}=0$ to simplify the expression. We now substitute our values for $g^{\theta\theta}$ and $g^{\phi\phi}$ to find
-  $$\Delta_{S^2}f = \frac{1}{R^2}(\cot{\theta}\frac{\partial f}{\partial\theta} + \frac{\partial^2 f}{\partial\theta^2} + \frac{1}{\sin^2{\theta}}\frac{\partial^2 f}{\partial\phi^2}).$$
+  $$\Delta_{S^2}f = \frac{1}{R^2}(\cot{\theta}\partial_\theta f + \partial^2_{\theta\theta} f + \frac{1}{\sin^2{\theta}}\partial^2_{\phi\phi} f).$$
   
   Now, we can rewrite equation \ref{eq:General-Heat-Eq} as
-  $$\frac{\partial T}{\partial t} = \kappa \frac{1}{R^2}(\cot{\theta}\frac{\partial T}{\partial\theta} + \frac{\partial^2 T}{\partial\theta^2} + \frac{1}{\sin^2{\theta}}\frac{\partial^2 T}{\partial\phi^2})$$
+  $$\partial_t T = \kappa \frac{1}{R^2}(\cot{\theta}\partial_\theta T + \partial^2_{\theta\theta} T + \frac{1}{\sin^2{\theta}}\partial^2_{\phi\phi} T)$$
   which we discretesize using
   $$\partial_{x^k} T_{ij} \approx \frac{T_{ij}-T_{i(j-1)}}{\Delta x^k}$$
   $$\partial^2_{x^kx^k} T_{ij} \approx \frac{-T_{(i+1)j} + 2T_{ij} - T_{(i-1)j}}{(\Delta x^k)^2}$$
-  for any coordinate $x^k$.
+  for coordinate $x^k$.
 
   \newpage
-  \appendix\label{Mikkola}
-  \section{Mikkola's Approximation}
-  Here follows the full calculation by which the eccentric anomaly $E(t)$ can be approximated using Mikkola's method. This paper only presents the elliptical case and does not provide any proof or explanation to any of these steps. The curious reader is referred to the original paper [TODO: add reference!!].
+  \appendix
+  \section{Mikkola's Approximation}\label{Mikkola}
+  Here follows the full calculation by which the eccentric anomaly $E(t)$ can be approximated using Mikkola's method. This paper only presents the elliptical case and does not provide any proof or explanation to any of these steps. The curious reader is referred to the original paper \cite{mikkola}.
 
   \subsection{Formula}
   Assuming the value of the mean anomaly $M(t)$ is known, Kepler's equation can (in the elliptical case) be rewritten as
@@ -171,4 +183,7 @@
   $$s \approx z - \frac{\alpha}{z}.$$
 
   Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion.
+
+  \newpage
+  \printbibliography
 \end{document}
