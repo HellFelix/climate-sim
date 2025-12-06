@@ -1,0 +1,174 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{Simplified Climate Simulation}
+\author{
+    Felix Hellborg,
+    Rasmus Pernesten
+    \\
+    \textbf{Handledare: Erik Swietlicki}
+}
+\date{
+    \textbf{\date}
+}
+\begin{document}
+  \maketitle
+
+  \section{Solar System}
+  The solar system model used in the simulation is a simplified model of our own solar system, consisting of only one planet. The parameters of the planet's orbit can be set arbitrarily, including period time $T$, time at perihelion $\tau_p$, eccentricity $e$. The planet's motion relative to the star (always located at the origin) adheres to Kepler's laws of planetary motion:
+  $$x = a(\cos E - e)$$
+  $$y = b\sin E = a \sqrt{1-e^2} \sin E$$
+  where $a$ is the semi-major axis, $b$ is the semi-minor axis, and the eccentric anomaly $E$ is related to the mean anomaly $M$ by
+  $$M = E - e\sin E$$
+  where
+  $$M \equiv n(t-\tau_p).$$
+  
+  Here, n denotes the average rate of sweep
+  $$n \equiv \frac{2\pi}{T},$$
+  and $t$ is the time in arbitrary units since start.
+
+  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, the exact solution usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented in Appendix \ref{Mikkola}.
+  
+  \section{Heat Equation}
+
+  
+  \begin{equation}
+    \frac{\partial T}{\partial t} = \kappa\nabla^2 T = \kappa(\frac{\partial^2 T}{\partial x^2} + \frac{\partial^2 T}{\partial y^2})
+    \label{eq: Heat Equation}
+  \end{equation}
+
+  \subsection{Runge-Kutta Methods}
+  Assuming we have discretesized the map into a heat matrix T at some time $t$ of size $i\cdot j$, we can solve for T at time (t+h) using a system of RK4 calculations.
+
+  Given an equation
+  \begin{equation}
+    \frac{dA}{dt} = F(A, t)
+  \end{equation}
+  where $A$ is a matrix and $F$ is a linear function in the basis of $A$, and an initial value of $A(t)$, we get
+
+  \begin{equation}
+    A(t+h) \approx \frac{h}{6}(k_1+k_2+k_3+k_4)
+    \label{eq:rk4}
+  \end{equation}
+  where
+  \begin{equation}
+    k_1 = F(A(t)),
+    \label{eq:k1}
+  \end{equation}
+  
+  \begin{equation}
+    k_2 = F(A(t) + \frac{h}{2}k_1),
+    \label{eq:k2}
+  \end{equation}
+  
+  \begin{equation}
+    k_3 = F(A(t) + \frac{h}{2}k_2),
+    \label{eq:k3}
+  \end{equation}
+  
+  \begin{equation}
+    k_4 = F(A(t) + hk_3).
+    \label{eq:k4}
+  \end{equation}
+  The approximation given by RK4 perform significantly better than the familiar Euler method, especially at larger time-steps, allowing us to run the simulation at higher speeds.
+
+  Note that for partial differential equations, we must also discretesize (approximate) derivatives as follows:
+
+  \begin{equation}
+    \frac{\partial^2 a_{ij}}{\partial x^2} \approx \frac{-a_{i(j+1)} + 2a_{ij} - a_{i(j-1)}}{(\Delta x)^2}
+  \end{equation}
+ 
+  \begin{equation}
+    \frac{\partial^2 a_{ij}}{\partial y^2} \approx \frac{-a_{(i+1)j} + 2a_{ij} - a_{(i-1)j}}{(\Delta y)^2}
+  \end{equation} 
+
+  \subsection{Spherical Coordinates}
+  In the beginning of this chapter, we wrote the heat equation using the Laplace operator $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Reimann manifold where the interval is
+  $$ds^2 = dx^2 + dy^2.$$
+
+  In general, we define the metric tensor on a manifold through the interval
+  $$ds^2 = g_{\mu\nu}dx^\mu dx^\nu.$$
+  (Note the usage of the Einstein summation convention.)
+
+  The heat equation then becomes
+  \begin{equation}
+    \frac{\partial T}{\partial t} = \kappa \Delta_g T
+    \label{eq:General-Heat-Eq}
+  \end{equation}
+  where $\Delta_g$ denotes the Laplace-Beltrami which, when applied to some scalar function $f$, yields
+  \begin{equation}
+    \Delta_g f = \frac{1}{\sqrt{|g|}} \partial_i(\sqrt{|g|}g^{ij}\partial_j f).
+    \label{eq:Laplace-Beltrami}
+  \end{equation}
+  Here, $|g|$ is the absolute value of the determinant of the metric tensor. Again, note the usage of the Einstein summation convention.
+  
+  In our flat case:
+  $$ g_{\mu\nu} =
+  \begin{pmatrix}
+    1 & 0\\
+    0 & 1
+  \end{pmatrix}
+  $$
+  and $|g|$ is $1$. Thus, we can calculate $\Delta_g f$ from equation \ref{eq:Laplace-Beltrami} as
+  
+  $$\Delta_g f = \frac{\partial^2 f}{\partial (x^1)^2} + \frac{\partial^2 f}{\partial (x^2)^2}$$
+  or in cartesian coordinates
+  
+  $$\Delta_g f = \frac{\partial^2 f}{\partial x^2} + \frac{\partial^2 f}{\partial y^2}$$
+
+  We're interested in the $S^2$ Riemann manifold where 
+
+  $$g = 
+  \begin{pmatrix}
+    R^2 & 0 \\
+    0 & R^2\sin^2{\theta}
+  \end{pmatrix}
+  $$
+  Because
+  $$g_{ij} = 0 \quad \forall \quad i \neq j$$
+  we find
+  $$|g| = R^4\sin^2{\theta} \Rightarrow \sqrt{|g|} = R^2\sin{\theta} \quad \forall \quad \theta \in [0, \pi]$$
+  and
+  $$g^{ii} = \frac{1}{g_{ii}}.$$
+  
+  From equation \ref{eq:Laplace-Beltrami}, we find 
+
+  $$\Delta_{S^2}f = \frac{1}{R^2\sin{\theta}}(\frac{\partial}{\partial \theta}(R^2\sin{\theta}(g^{\theta\theta}\frac{\partial f}{\partial\theta})) + (\frac{\partial}{\partial \phi}R^2\sin{\theta}(g^{\phi\phi}\frac{\partial f}{\partial\phi}))).$$
+  Here, we've used the fact that $g^{\theta\phi}=g^{\phi\theta}=0$ to simplify the expression. We now substitute our values for $g^{\theta\theta}$ and $g^{\phi\phi}$ to find
+  $$\Delta_{S^2}f = \frac{1}{R^2}(\cot{\theta}\frac{\partial f}{\partial\theta} + \frac{\partial^2 f}{\partial\theta^2} + \frac{1}{\sin^2{\theta}}\frac{\partial^2 f}{\partial\phi^2}).$$
+  
+  Now, we can rewrite equation \ref{eq:General-Heat-Eq} as
+  $$\frac{\partial T}{\partial t} = \kappa \frac{1}{R^2}(\cot{\theta}\frac{\partial T}{\partial\theta} + \frac{\partial^2 T}{\partial\theta^2} + \frac{1}{\sin^2{\theta}}\frac{\partial^2 T}{\partial\phi^2})$$
+  which we discretesize using
+  $$\partial_{x^k} T_{ij} \approx \frac{T_{ij}-T_{i(j-1)}}{\Delta x^k}$$
+  $$\partial^2_{x^kx^k} T_{ij} \approx \frac{-T_{(i+1)j} + 2T_{ij} - T_{(i-1)j}}{(\Delta x^k)^2}$$
+  for any coordinate $x^k$.
+
+  \newpage
+  \appendix\label{Mikkola}
+  \section{Mikkola's Approximation}
+  Here follows the full calculation by which the eccentric anomaly $E(t)$ can be approximated using Mikkola's method. This paper only presents the elliptical case and does not provide any proof or explanation to any of these steps. The curious reader is referred to the original paper [TODO: add reference!!].
+
+  \subsection{Formula}
+  Assuming the value of the mean anomaly $M(t)$ is known, Kepler's equation can (in the elliptical case) be rewritten as
+  
+  $$E(t) = M(t) + e(3s-4s^3)$$
+  where
+  $$s \equiv \sin{E(t)/3}.$$
+
+  The trick lies in approximating $s$, which can be done by setting
+  $$\alpha \equiv (1-e)/(4e+\frac{1}{2})$$
+  and
+  $$\beta \equiv \frac{1}{2}M/(4e+\frac{1}{2}).$$
+
+  Now let
+  $$z = (\beta \pm \sqrt{\beta^2+\alpha^3})^{1/3},$$
+  choosing the sign of the root term to match the sign of $\beta$.
+  
+  We can, by means of a series expansion approximate $s$ by
+  $$s \approx z - \frac{\alpha}{z}.$$
+
+  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion.
+\end{document}
