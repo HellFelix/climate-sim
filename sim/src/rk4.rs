@@ -42,10 +42,10 @@ pub fn heat_eq_step_spherical(T0: &Array2<f32>, h: f32) -> Array2<f32> {
                     let theta_plus_half = theta + DTHETA / 2.;
                     let theta_minus_half = theta - DTHETA / 2.;
 
-                    let theta_break = if y < HEIGHT / 2 {
-                        theta_plus_half
+                    let (is_upper, theta_break) = if y < HEIGHT / 2 {
+                        (true, theta_plus_half)
                     } else {
-                        theta_minus_half
+                        (false, theta_minus_half)
                     };
 
                     // info!("First is {}", (theta.sin() * DTHETA.powi(2)));
@@ -53,15 +53,17 @@ pub fn heat_eq_step_spherical(T0: &Array2<f32>, h: f32) -> Array2<f32> {
                     // info!("Third is {}", DPHI.powi(2));
 
                     res[[x, y]] = (1. / R.powi(2))
-                        * ((1. / (theta_break.sin() * DTHETA.powi(2))
-                            * theta_plus_half.sin()
-                            * (T[[(x + 1) % WIDTH, y % HEIGHT]] - T[[x, y]])
-                            - theta_minus_half.sin()
-                                * (T[[x, y]] - T[[(x + WIDTH + 1) % WIDTH, y % HEIGHT]]))
-                            + (1. / theta_break.sin().powi(2))
-                                * (T[[x, if y == HEIGHT - 1 { y } else { y + 1 }]]
-                                    - 2. * T[[x % WIDTH, y % HEIGHT]]
-                                    + T[[x % WIDTH, if y == 0 { 0 } else { y - 1 }]])
+                        * ((theta_break.cos() / theta_break.sin())
+                            * (T[[x, if is_upper { y + 1 } else { y }]]
+                                - T[[x, if is_upper { y } else { y - 1 }]])
+                            / DTHETA
+                            + (T[[x, if y == 0 { y } else { y - 1 }]] - 2. * T[[x, y]]
+                                + T[[x, if y == HEIGHT - 1 { y } else { y + 1 }]])
+                                / DTHETA.powi(2)
+                            + theta_break.powi(-2)
+                                * (T[[if x == 0 { WIDTH - 1 } else { x - 1 }, y]]
+                                    - 2. * T[[x, y]]
+                                    + T[[if x == WIDTH - 1 { 0 } else { x + 1 }, y]])
                                 / DPHI.powi(2));
                 }
             }

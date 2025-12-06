@@ -2,4 +2,8 @@
 *.out
 *.pdf
 *.log
+*.bbl
+*.bcf
+*.blg
+*.run.xml
 /target
