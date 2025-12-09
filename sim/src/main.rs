@@ -20,12 +20,17 @@ mod rk4;
 mod temp;
 mod view;
 
+mod sampling;
+
 fn main() {
     let mut record = false;
+    let mut sample = false;
     let args = env::args();
     for arg in args {
-        if arg == "record" {
-            record = true;
+        match &arg[..] {
+            "record" => record = true,
+            "sample" => sample = true,
+            _ => {}
         }
     }
 
@@ -49,6 +54,12 @@ fn main() {
         .add_systems(Update, capture_frame);
     } else {
         app.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()));
+    }
+
+    if sample {
+        app.add_systems(Startup, sampling::start_sampling)
+            .add_systems(Update, sampling::plot_data)
+            .add_systems(FixedUpdate, sampling::sample_temp);
     }
 
     app.add_systems(

@@ -1,4 +1,4 @@
-use std::f32::consts::PI;
+use std::f32::{INFINITY, consts::PI};
 
 use crate::{
     consts::*,
@@ -73,6 +73,32 @@ impl TempMap {
         }
 
         colors
+    }
+
+    pub fn get_heat_stats(&self) -> (f32, f32, f32, f32, f32) {
+        let mut max = -INFINITY;
+        let mut min = INFINITY;
+        let mut avg = 0.;
+
+        for t in &self.0 {
+            if *t > max {
+                max = *t;
+            }
+            if *t < min {
+                min = *t
+            }
+            avg += t
+        }
+
+        avg /= (HEIGHT * WIDTH) as f32;
+
+        (
+            max,
+            min,
+            avg,
+            self.0[[0, HEIGHT / 4]],
+            self.0[[0, HEIGHT * 3 / 4]],
+        )
     }
 }
 

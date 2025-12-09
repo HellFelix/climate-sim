@@ -7,9 +7,10 @@ pub const SPEEDUP: u32 = 10;
 // Control consts
 pub const TRANSLATION_SPEED: f32 = 0.1;
 pub const ROTATION_SPEED: f32 = 0.02;
+pub const MAX_TIME: f32 = 5. * 60.; // Run for 5 minutes
 
 // Planet consts
-pub const PERIOD_TIME: f32 = 10.;
+pub const PERIOD_TIME: f32 = 60.; // Let one year be one minute
 pub const N: f32 = 2. * PI / PERIOD_TIME;
 pub const PER_TIME: f32 = 0.;
 pub const E: f32 = 0.16;
