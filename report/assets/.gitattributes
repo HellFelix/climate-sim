@@ -8,3 +8,5 @@ recording_diffused.mp4 filter=lfs diff=lfs merge=lfs -text
 recording_elliptical.mp4 filter=lfs diff=lfs merge=lfs -text
 recording_rotating.mp4 filter=lfs diff=lfs merge=lfs -text
 recording_tilted.mp4 filter=lfs diff=lfs merge=lfs -text
+recording_greenhouse2x.mp4 filter=lfs diff=lfs merge=lfs -text
+temperature_greenhouse2x.png filter=lfs diff=lfs merge=lfs -text
