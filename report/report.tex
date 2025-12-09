@@ -20,9 +20,9 @@
 
 
   \begin{abstract}
-Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively-and to avoid spending time and resources on ineffective measures-climate models are developed. With the aim of understanding how such a model can be constructed and what difficulties arise in the process, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system..
-This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena.
-Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions.
+   Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively-and to avoid spending time and resources on ineffective measures-climate models are developed. With the aim of understanding how such a model can be constructed and what difficulties arise in the process, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system.
+   This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena.
+   Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions.
  \end{abstract}
   
   \section{Simulation}
@@ -165,6 +165,44 @@ Our goal with the model was to observe effects such as day–night cycles, seaso
   $$\partial^2_{x^kx^k} T_{ij} \approx \frac{-T_{(i+1)j} + 2T_{ij} - T_{(i-1)j}}{(\Delta x^k)^2}$$
   for coordinate $x^k$.
 
+
+  \subsection{Atmosphere}
+  The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account. There are several methods for doing this, each with its own strengths and weaknesses.  
+  \subsubsection{Monte Carlo Method}
+  The Monte Carlo method is the most accurate approach for simulating light traveling through a medium such as the atmosphere. In this method, the path of each photon is simulated individually, and every interaction with the atmosphere is calculated separately. It is therefore highly flexible and can be applied to any medium and at any wavelength, but it is unrealistic for large-scale simulations due to its heavy computational cost. [NASA 1986] 
+  \subsubsection{Flux Transmission Towards the Earth}
+  Since the Monte Carlo method is far too computationally heavy to run within a reasonable time on a planet-sized system, simplifications must be made. We begin by separating the incoming solar radiation from the outgoing thermal radiation emitted by the planet. In this chapter, we discuss how we model the light approaching the Earth and what happens to it as it passes through the atmosphere.
+  \\
+  One important simplification is that we are only interested in the top of the atmosphere, where $\tau_{\nu} = 0$, and the bottom of the atmosphere, where $\tau_{\nu} = \tau_{\nu}^*$. Everything that happens between these two heights is separated into three cases.
+   
+  \begin{enumerate}
+    \item The direct flux component is modeled as
+     \[
+        \pi \mu_0 F_0 e^{-\tau^{*}/\mu_0}
+      ]\
+
+    \item The diffuse transmission component, which is scattered multiple times before reaching the surface, is modeled as
+      \[
+        \pi \mu_0 F_0 t(-\mu_0)
+      ]\
+
+    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface.
+  \end{enumerate}
+
+  Together they kan be kombinde to
+
+  \begin{equation}
+   T_r(-\mu_0) = t(-\mu) + e^{-\tau^{*}/\mu_0} .
+  \end{equation}
+  
+
+
+
+
+
+
+
+
   \newpage
   \appendix
   \section{Mikkola's Approximation}\label{Mikkola}
@@ -190,6 +228,9 @@ Our goal with the model was to observe effects such as day–night cycles, seaso
   $$s \approx z - \frac{\alpha}{z}.$$
 
   Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion.
+
+
+ 
 
   \newpage
   \printbibliography
