@@ -17,6 +17,13 @@
 }
 \begin{document}
   \maketitle
+
+
+  \begin{abstract}
+Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively-and to avoid spending time and resources on ineffective measures-climate models are developed. With the aim of understanding how such a model can be constructed and what difficulties arise in the process, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system..
+This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena.
+Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions.
+ \end{abstract}
   
   \section{Simulation}
   The simulation built during this project is written in Rust using the Bevy game engine.
@@ -41,7 +48,7 @@
   $$n \equiv \frac{2\pi}{T},$$
   and $t$ is the time in arbitrary units since start.
 
-  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, the exact solution usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented in Appendix \ref{Mikkola}.
+  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented in Appendix \ref{Mikkola}.
   
   \section{Heat Equation}
 
