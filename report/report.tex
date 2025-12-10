@@ -23,8 +23,16 @@
    Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively-and to avoid spending time and resources on ineffective measures-climate models are developed. With the aim of understanding how such a model can be constructed and what difficulties arise in the process, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system.
    This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena.
    Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions.
- \end{abstract}
+  \end{abstract}
   
+  \section{Introduction}
+
+  This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper.
+
+  Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters have been adjusted to yield realistic behaviour; more on this is explained in Section~2.1. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs---which our model successfully demonstrates.
+
+  \subsubsection{Nomenclature}
+   
   \section{Simulation}
   The simulation built during this project is written in Rust using the Bevy game engine.
   
@@ -177,25 +185,64 @@
    
   \begin{enumerate}
     \item The direct flux component is modeled as
-    $$
+      \begin{equation}
       \pi \mu_0 F_0 e^{-\tau^{*}/\mu_0}
-    $$
+       \label{eq:direct_compnente}
+      \end{equation}
 
     \item The diffuse transmission component, which is scattered multiple times before reaching the surface, is modeled as
-    $$
+      \begin{equation}
       \pi \mu_0 F_0 t(-\mu_0)
-    $$
+        \label{eq:difused_componente}
+      \end{equation}
 
-    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface.
+    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface, which will be adressed soon.
   \end{enumerate}
+  Together, equations~\ref{eq:direct_compnente} and~\ref{eq:difused_componente} can be combined into
 
-  Together they kan be kombinde to
+\begin{equation}
+    T_r(-\mu_0) = t(-\mu) + e^{-\tau^{*}/\mu_0}.
+\end{equation}
+
+Here, $t(-\mu)$ is approximated by $\frac{\omega \tau^{*}}{2\mu_0}$, where $\omega$ is given by
+\[
+\omega = \frac{\text{diffusion}}{\text{diffusion} + \text{absorption}}.
+\]
+If this expression is multiplied by the incoming flux, we obtain
+
+\begin{equation}
+    \pi \mu_0 F_0 T_r(-\mu_0)
+    \label{eq:direct-flux-tr}
+\end{equation}
+
+since the solar constant is $F_0 \pi$ and $\mu_0 = \cos(\theta_0)$, where $\theta_0$ is the angle of the incoming radiation measured from the local surface normal. The factor $\pi \mu_0 F_0$ therefore represents the flux at a given point as a function of the solar zenith angle.
+
+This expression applies before any reflections from the surface are taken into account. Because there are theoretically an infinite number of such reflections, they are treated as the convergent series
+
+\begin{equation}
+    \pi \mu_0 F_0 T_r(-\mu_0)
+    \left[
+        \rho_s \bar{r} 
+        + \rho_s^2 \bar{r}^2 
+        + \rho_s^3 \bar{r}^3 
+        + \dots
+    \right]
+    \label{eq:multiple-scattering-series}
+\end{equation}
+
+where $\bar{r}$ is the atmospheric albedo without the surface contribution, and $\rho_s$ is the surface albedo. 
+Note that this infinite-reflection model is valid only when the surface is Lambertian, meaning that reflections are assumed to be equally likely in all directions. Each term in the series represents one additional surface reflection followed by atmospheric scattering: the first term corresponds to a single reflection, the second term to two reflections, and so on. 
+Fortunately, this series is convergent, making it straightforward to evaluate numerically.
 
   \begin{equation}
-   T_r(-\mu_0) = t(-\mu) + e^{-\tau^{*}/\mu_0} .
+  \begin{aligned}
+    F_T(\mu_0)
+        &= \pi \mu_0 F_0 T_r(-\mu_0)
+           \left[ 1 + \rho_s \bar{r} + \rho_s^2 \bar{r}^2 + \rho_s^3 \bar{r}^3 + \dots \right] \\
+        &= \frac{\pi \mu_0 F_0 T_r(-\mu_0)}{1 - \rho_s \bar{r}}
+  \end{aligned}
+  \label{eq:ft-series}
   \end{equation}
-  
-
 
 
 
