@@ -2,6 +2,7 @@
 
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{graphicx}
 
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{refs.bib}
@@ -29,13 +30,13 @@
 
   This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper.
 
-  Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters will be adjusted to yield realistic behaviour; more on this is explained in Section~2.1. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs; which our model successfully demonstrates.
+  Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters will be adjusted to yield realistic behaviour; more on this is explained in section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs; which our model successfully demonstrates.
 
   \subsubsection{Nomenclature}
    
   \section{Theory}
  
-  \section{Solar System}
+  \subsection{Solar System}
   The solar system model used in the simulation is a simplified model of our own solar system, consisting of only one planet. The parameters of the planet's orbit can be set arbitrarily, including period time $T$, time at perihelion $\tau_p$, eccentricity $e$. The planet's motion relative to the star (always located at the origin) adheres to Kepler's laws of planetary motion:
   $$x = a(\cos E - e)$$
   $$y = b\sin E = a \sqrt{1-e^2} \sin E$$
@@ -50,7 +51,7 @@
 
   The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented in Appendix \ref{Mikkola}.
   
-  \section{Heat Equation}
+  \subsection{Heat Equation}
 
   The heat equation on a flat cartesian plane can be written as \cite{wikiheat}
   $$
@@ -58,7 +59,7 @@
   $$
   where $\nabla^2$ denotes the Laplacian. In section \ref{sphere-coords}, we will generalize the heat equation further to be defined on a spherical surface using the Laplace-Beltrami operator. For now, however, we will use the simplest possible geometry to discuss how we can simulate heat diffusion in a discrete system.
 
-  \subsection{Runge-Kutta Methods}
+  \subsubsection{Runge-Kutta Methods}
   Assuming we have discretesized the map into a heat matrix T at some time $t$, we can solve for T at time (t+h) using a system of RK4 calculations \cite{originalkutta} \cite{wikikutta}.
 
   Given an equation
@@ -103,7 +104,7 @@
 
   
 
-  \subsection{Spherical Coordinates}\label{sphere-coords}
+  \subsubsection{Spherical Coordinates}\label{sphere-coords}
   In the beginning of this chapter, we wrote the heat equation using the Laplacian $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Reimann manifold where the interval is
   $$ds^2 = dx^2 + dy^2.$$
 
@@ -169,11 +170,11 @@
   \subsection{Atmosphere}
   The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account. There are several methods for doing this, each with its own strengths and weaknesses.  
   \subsubsection{Monte Carlo Method}
-  The Monte Carlo method is the most accurate approach for simulating light traveling through a medium such as the atmosphere. In this method, the path of each photon is simulated individually, and every interaction with the atmosphere is calculated separately. It is therefore highly flexible and can be applied to any medium and at any wavelength, but it is unrealistic for large-scale simulations due to its heavy computational cost. [NASA 1986] 
+  The Monte Carlo method is the most accurate approach for simulating light traveling through a medium such as the atmosphere. In this method, the path of each photon is simulated individually, and every interaction with the atmosphere is calculated separately. It is therefore highly flexible and can be applied to any medium and at any wavelength, but it is unrealistic for large-scale simulations due to its heavy computational cost. \cite{NASA1986}  
   \subsubsection{Flux Transmission Towards the Earth}
-  Since the Monte Carlo method is far too computationally heavy to run within a reasonable time on a planet-sized system, simplifications must be made. We begin by separating the incoming solar radiation from the outgoing thermal radiation emitted by the planet. In this chapter, we discuss how we model the light approaching the Earth and what happens to it as it passes through the atmosphere.
-  \\
-  One important simplification is that we are only interested in the top of the atmosphere, where $\tau_{\nu} = 0$, and the bottom of the atmosphere, where $\tau_{\nu} = \tau_{\nu}^*$. Everything that happens between these two heights is separated into three cases.
+  Since the Monte Carlo method is far too computationally heavy to calculate flux (Power per square length unit) within a reasonable time on a planet-sized system, simplifications must be made. We begin by separating the incoming solar radiation from the outgoing thermal radiation emitted by the planet. In this chapter, we discuss how we model the light approaching the Earth and what happens to it as it passes through the atmosphere.
+  
+  One important simplification is that we are only interested in the top of the atmosphere, where $\tau_{\nu} = 0$, and the bottom of the atmosphere, where $\tau_{\nu} = \tau_{\nu}^*$, the optical depth of the atmosphere. Everything that happens between these two heights is separated into three cases.
    
   \begin{enumerate}
     \item The direct flux component is modeled as
@@ -221,7 +222,7 @@ This expression applies before any reflections from the surface are taken into a
     \right]
     \label{eq:multiple-scattering-series}
 \end{equation}
-
+\\
 where $\bar{r}$ is the atmospheric albedo without the surface contribution, and $\rho_s$ is the surface albedo. 
 Note that this infinite-reflection model is valid only when the surface is Lambertian, meaning that reflections are assumed to be equally likely in all directions. Each term in the series represents one additional surface reflection followed by atmospheric scattering: the first term corresponds to a single reflection, the second term to two reflections, and so on. 
 Fortunately, this series is convergent, making it straightforward to evaluate numerically.
@@ -235,11 +236,31 @@ Fortunately, this series is convergent, making it straightforward to evaluate nu
   \end{aligned}
   \label{eq:ft-series}
   \end{equation}
+  
+  
+   We now have a fast numerical method to calculate the flux as a function of the angle of incidence $\pi \mu_0 F_0$, the atmospheric albedo $\bar{r}$, and the surface albedo $\rho_s$ \cite{NASA1986}.
 
-\subsection{Simulation}
+
+ \subsection{Heat Radiation}
+ 
+As is well known among those who have studied physics, all bodies radiate energy according to
+\[
+E = \sigma T^4,
+\]
+where \(E\) is the emitted energy, \(\sigma\) is the Stefan--Boltzmann constant, and \(T\) is the temperature.
+This is the basic relation used to calculate how much energy is emitted from each point on a surface \cite{stefan1879}.
+
+However, this expression assumes a perfect blackbody, and since the Earth is certainly not a perfect blackbody, it is more appropriate to treat it as a gray body
+\begin{equation}
+  \label{eq:gray_body}
+   E = \epsilon \sigma T^4
+\end{equation}
+with $0<\epsilon<1$. Another important limitation of this simple radiation model is that it does not account for interactions with the atmosphere, such as scattering, diffusion, and reflection.
+  \section{Simulation}
  The simulation built during this project is written in Rust using the Bevy game engine.
   
   \subsection{Units}
+   \label{sec:units}
   For the purposes of this project, the units of measurements are not the regular SI-units. Because we're interested in the trends, and the relationships between parameters and outcomes, the values of the simulation parameters have been set such that they yield interesting and realistic results with respect to internal consistency (within the units of measurements we're using, whatever they may be).
 
   When in the course of reading this report, the reader comes across the usage of distance units [D.U.] or temperature units [T.U.], they should be imagined as corresponding to meters [m] and Kelvin [K] respectively with some arbitrary scaling factor. Note that temperature will always be given in an absolute scale (i.e. starting at zero).
@@ -249,7 +270,16 @@ Fortunately, this series is convergent, making it straightforward to evaluate nu
 
 
 
-
+ \section{Results}
+   After assembling the mathematical models from the theory into a single model, we simulated the system in several different configurations to see how various parts of the model affect the results.
+ \subsection{Non rotating planet}
+ Firsty we wanted to take a very simple case, a non rotating planet that rotates around its star with planet-axis perpendicular to the plane wich it rotates in.
+ \begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\textwidth]{assets/temperature_basic.png}
+    \caption{Your caption text here.}
+    \label{fig:my_figure}
+ \end{figure}
 
   \newpage
   \appendix
