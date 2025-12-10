@@ -33,16 +33,8 @@
 
   \subsubsection{Nomenclature}
    
-  \section{Simulation}
-  The simulation built during this project is written in Rust using the Bevy game engine.
-  
-  \subsection{Units}
-  For the purposes of this project, the units of measurements are not the regular SI-units. Because we're interested in the trends, and the relationships between parameters and outcomes, the values of the simulation parameters have been set such that they yield interesting and realistic results with respect to internal consistency (within the units of measurements we're using, whatever they may be).
-
-  When in the course of reading this report, the reader comes across the usage of distance units [D.U.] or temperature units [T.U.], they should be imagined as corresponding to meters [m] and Kelvin [K] respectively with some arbitrary scaling factor. Note that temperature will always be given in an absolute scale (i.e. starting at zero).
-
-  The visual representation should not be thought of as having a realistic scale. The size of a planet with respect to the distance to its host star is so small as to be impossible to see in a realistic relative scale. The same thing is true for the relative difference in size between the planet and the host star itself (the diameter ratio between the earth and the sun is roughly 110:1 \cite{wikisun}).
-  
+  \section{Theory}
+ 
   \section{Solar System}
   The solar system model used in the simulation is a simplified model of our own solar system, consisting of only one planet. The parameters of the planet's orbit can be set arbitrarily, including period time $T$, time at perihelion $\tau_p$, eccentricity $e$. The planet's motion relative to the star (always located at the origin) adheres to Kepler's laws of planetary motion:
   $$x = a(\cos E - e)$$
@@ -244,7 +236,16 @@ Fortunately, this series is convergent, making it straightforward to evaluate nu
   \label{eq:ft-series}
   \end{equation}
 
+\subsection{Simulation}
+ The simulation built during this project is written in Rust using the Bevy game engine.
+  
+  \subsection{Units}
+  For the purposes of this project, the units of measurements are not the regular SI-units. Because we're interested in the trends, and the relationships between parameters and outcomes, the values of the simulation parameters have been set such that they yield interesting and realistic results with respect to internal consistency (within the units of measurements we're using, whatever they may be).
 
+  When in the course of reading this report, the reader comes across the usage of distance units [D.U.] or temperature units [T.U.], they should be imagined as corresponding to meters [m] and Kelvin [K] respectively with some arbitrary scaling factor. Note that temperature will always be given in an absolute scale (i.e. starting at zero).
+
+  The visual representation should not be thought of as having a realistic scale. The size of a planet with respect to the distance to its host star is so small as to be impossible to see in a realistic relative scale. The same thing is true for the relative difference in size between the planet and the host star itself (the diameter ratio between the earth and the sun is roughly 110:1 \cite{wikisun}).
+  
 
 
 
