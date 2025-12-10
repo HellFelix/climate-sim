@@ -3,6 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
+\usepackage{subcaption}
 
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{refs.bib}
@@ -23,13 +24,13 @@
   \begin{abstract}
    Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively-and to avoid spending time and resources on ineffective measures-climate models are developed. With the aim of understanding how such a model can be constructed and what difficulties arise in the process, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system.
    This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena.
-   Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions.
+   Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions. It is also able to see biger trends such as the general effect of an increase of greenhouse gases.
+
   \end{abstract}
   
   \section{Introduction}
 
   This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper.
-
   Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters will be adjusted to yield realistic behaviour; more on this is explained in section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs; which our model successfully demonstrates.
 
   \subsubsection{Nomenclature}
@@ -37,6 +38,7 @@
   \section{Theory}
  
   \subsection{Solar System}
+  \label{sec:slora_system}
   The solar system model used in the simulation is a simplified model of our own solar system, consisting of only one planet. The parameters of the planet's orbit can be set arbitrarily, including period time $T$, time at perihelion $\tau_p$, eccentricity $e$. The planet's motion relative to the star (always located at the origin) adheres to Kepler's laws of planetary motion:
   $$x = a(\cos E - e)$$
   $$y = b\sin E = a \sqrt{1-e^2} \sin E$$
@@ -52,6 +54,7 @@
   The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented in Appendix \ref{Mikkola}.
   
   \subsection{Heat Equation}
+  \label{sec:heat_equation}
 
   The heat equation on a flat cartesian plane can be written as \cite{wikiheat}
   $$
@@ -268,18 +271,99 @@ with $0<\epsilon<1$. Another important limitation of this simple radiation model
   The visual representation should not be thought of as having a realistic scale. The size of a planet with respect to the distance to its host star is so small as to be impossible to see in a realistic relative scale. The same thing is true for the relative difference in size between the planet and the host star itself (the diameter ratio between the earth and the sun is roughly 110:1 \cite{wikisun}).
   
 
+\subsection{Limitations of the Simulation}
 
+This simulation uses numerical methods and simplified models to enable it to run in real time. As a consequence, rounding errors occur on top of the inherent limitations of the mathematical models. The model used to calculate light traveling through the atmosphere toward the Earth is fairly accurate as long as the diffuse components do not become too large, which occurs if there are too many clouds \cite{NASA1986}.
 
- \section{Results}
-   After assembling the mathematical models from the theory into a single model, we simulated the system in several different configurations to see how various parts of the model affect the results.
- \subsection{Non rotating planet}
- Firsty we wanted to take a very simple case, a non rotating planet that rotates around its star with planet-axis perpendicular to the plane wich it rotates in.
- \begin{figure}[h!]
+The emission of heat from the planet is simplified by treating the surface as a gray body, which completely ignores the interaction between thermal radiation and the atmosphere. To avoid slowing down the simulation, we also chose not to separate the incoming light into different spectral bands, even though these would interact differently with the atmosphere.
+
+In addition to these mathematical limitations, there are also conceptual ones. Due to its immense complexity, the atmosphere is treated only as a function acting on radiation. In our simulation it has no internal temperature, which removes any heat dissipation through winds or atmospheric circulation.
+
+\newpage
+\section{Results}
+
+After assembling the mathematical models from the theory into a single framework, we simulated the system in several different configurations to examine how various components of the model influence the results.
+
+First, we considered a very simple case: no heat diffusion and a non-rotating planet that orbits its star with an axis perpendicular to the orbital plane. This setup was then made progressively more realistic by adding rotation around the planet’s own axis, an elliptical orbit, and a tilted rotational axis.
+
+\begin{figure}[h!]
     \centering
-    \includegraphics[width=0.7\textwidth]{assets/temperature_basic.png}
-    \caption{Your caption text here.}
-    \label{fig:my_figure}
- \end{figure}
+
+    \begin{subfigure}[h!]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/temperature_basic.png}
+        \caption{Simulating temperatures on the surface of a non-rotating planet with an axis perpendicular to its orbital plane around its host star, with no heat diffusion.}
+        \label{fig:planet_basic}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[h!]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/temperature_rotating.png}
+        \caption{Simulating temperatures on the surface of a rotating planet with an axis perpendicular to its orbital plane around its host star, with no heat diffusion.}
+        \label{fig:planet_rotation}
+    \end{subfigure}
+
+    \vspace{0.5em}
+
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/temperature_elliptical.png}
+        \caption{Simulating temperatures on the surface of a rotating planet in an elliptical orbit around its host star, with no heat diffusion.}
+        \label{fig:planet_elliptic}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{assets/temperature_tilted.png}
+        \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with no heat diffusion.}
+        \label{fig:planet_tilted}
+    \end{subfigure}
+
+    \caption{Overview of the four simulation configurations.}
+    \label{fig:four-grid}
+\end{figure}
+
+We begin in Figure~\ref{fig:planet_basic} with a hypothetical planet whose day–night cycle is determined solely by its revolution around its host star: it experiences half a year of daylight and half a year of darkness. This trend can be seen in the cyclical patterns of the northern and southern samples in the figure. The small temperature differences between the northern and southern samples arise from rounding errors and are insignificant.
+
+Since heat diffusion is disabled, the poles remain at their initial temperature (the planet starts with a temperature of zero before reaching equilibrium), which results in the minimum temperature values. The equator, on the other hand, quickly climbs to a stable equilibrium temperature.
+
+In Figure~\ref{fig:planet_rotation} we enable rotation around the planet’s own axis, which produces a similar temperature diagram but with much faster day–night cycles.
+
+We then proceed to Figure~\ref{fig:planet_elliptic}, where the day–night cycle remains largely the same, but the maximum temperature now varies periodically. This occurs because the distance between the planet and its host star changes throughout the elliptical orbit (see Section~\ref{sec:slora_system}).
+
+Finally, in Figure~\ref{fig:planet_tilted} we tilt the planet’s rotational axis. We now observe that the northern and southern samples are completely mirrored, which is expected since they still share the same day–night timing but now experience vastly different angles of incidence. We also observe that the minimum temperature changes over time because one of the poles is always slightly tilted toward the star, meaning it no longer has an angle of incidence equal to \( 90^\circ \).
+
+\newpage
+ 
+
+All of this occurs without any diffusion of heat, which produces very sharp and unrealistic results, such as poles that receive no incoming heat. The next step is therefore to enable the heat diffusion methods in the simulation.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{assets/temperature_diffused.png}
+  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion enabled.}
+  \label{fig:planet_diffused}
+\end{figure}
+
+Figure~\ref{fig:planet_diffused} is similar to Figure~\ref{fig:planet_tilted}, but now the minimum temperatures at the poles are more realistic since heat can diffuse across the surface; see Section~\ref{sec:heat_equation}.
+
+With this model we can observe many real-world phenomena, and although the simulation is not exact by any means, it can still demonstrate larger-scale trends. For example, we can investigate the effects of drastically increasing greenhouse gas concentrations. In the simulation, this is implemented as a change in the constant determining how much energy can leave the system per unit time.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=\textwidth]{assets/temperature_greenhouse2x.png}
+  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion and an increased amount of greenhouse gases.}
+  \label{fig:planet_greenhouse}
+\end{figure}
+
+In Figure~\ref{fig:planet_greenhouse} we observe a noticeable increase in temperatures across the entire planet, which aligns with real-world expectations.
+
+\section{Conclusion}
+
+Our simulation is far from accurate, but it manages to reproduce several real-world phenomena, which was our primary goal. It does so while using mathematical models that have been applied in real-world climate and weather simulations by NASA.
+
+
+
 
   \newpage
   \appendix
