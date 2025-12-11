@@ -16,34 +16,49 @@
 
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{refs.bib}
+
+
 \title{Simplified Climate Simulation}
 \author{
     Felix Hellborg,
-    Rasmus Pernesten
-    \\
-    \textbf{Handledare: Erik Swietlicki}
+    Rasmus Pernesten \\
+    \textbf{Supervisor: Erik Swietlicki}
 }
-\date{
-    \textbf{\date}
-}
+\date{\today} 
+
+
+
+
+
 \begin{document}
-  \maketitle
 
-
+\maketitle
+\thispagestyle{empty} 
 
 \begin{abstract}
 With the aim of understanding how a climate model can be constructed and what limitations it will have, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system. With a simplified atmosphere and simplified heat transfer, the simulation can in real time show how energy from the Sun is dispersed around the globe.
 
 This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena. 
-Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions. It is also able to capture larger trends, such as the general effect of an increase in greenhouse gases.
+Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles and a warmer equator, the Milankovic effect and Hadley circulation. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions. It is also able to capture larger trends, such as the general effect of an increase in greenhouse gases.
 \end{abstract}
+\newpage
+
+\tableofcontents
+\thispagestyle{empty} 
+
+\newpage
+
+\setcounter{page}{1} 
+
+
+
 
 \section{Introduction}
 
 
 Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively, and to avoid spending time and resources on ineffective measures, climate models are developed.
 
-This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper.
+This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper, in section \ref{sec:limitations}.
 
 Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters were adjusted to yield realistic behaviour; more on this is explained in Section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs, which our model successfully demonstrates.
    
@@ -67,7 +82,7 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
    
   
   \subsection{Mikkola's Approximation}\label{Mikkola}
-  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented below
+  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented below.
   
   \subsubsection{Formula}
   Assuming the value of the mean anomaly $M(t)$ is known, Kepler's equation can (in the elliptical case) be rewritten as
@@ -88,16 +103,16 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
   We can, by means of a series expansion approximate $s$ by
   $$s \approx z - \frac{\alpha}{z}.$$
 
-  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion.
+  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion, se \cite{mikkola}.
   
   \subsection{Heat Equation}
   \label{sec:heat_equation}
 
-  The heat equation on a flat cartesian plane can be written as \cite{wikiheat}
+  The heat equation on a flat cartesian plane can be written as 
   $$
     \partial_t T = \kappa\nabla^2 T = \kappa(\partial^2_{xx} T + \partial^2_{yy} T)
   $$
-  where $\nabla^2$ denotes the Laplacian. In section \ref{sphere-coords}, we will generalize the heat equation further to be defined on a spherical surface using the Laplace-Beltrami operator. For now, however, we will use the simplest possible geometry to discuss how we can simulate heat diffusion in a discrete system.
+  where $\nabla^2$ denotes the Laplacian \cite{wikiheat}. In section \ref{sphere-coords}, we will generalize the heat equation further to be defined on a spherical surface using the Laplace-Beltrami operator. For now, however, we will use the simplest possible geometry to discuss how we can simulate heat diffusion in a discrete system.
 
   \subsubsection{Runge-Kutta Methods}
   Assuming we have discretesized the map into a heat matrix T at some time $t$, we can solve for T at time (t+h) using a system of RK4 calculations \cite{originalkutta} \cite{wikikutta}.
@@ -211,11 +226,11 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
   $$\partial^2_{\phi\phi} T_{ij} \approx \frac{-T_{i(j+1)} + 2T_{ij} - T_{i(j-1)}}{(\Delta \phi)^2}$$
 
   \subsection{Atmosphere}
-  The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account. There are several methods for doing this, each with its own strengths and weaknesses.  
+  The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account.   
   \subsubsection{Monte Carlo Method}
   The Monte Carlo method is the most accurate approach for simulating light traveling through a medium such as the atmosphere. In this method, the path of each photon is simulated individually, and every interaction with the atmosphere is calculated separately. It is therefore highly flexible and can be applied to any medium and at any wavelength, but it is unrealistic for large-scale simulations due to its heavy computational cost. \cite{NASA1986}  
   \subsubsection{Flux Transmission Towards the Earth}
-  Since the Monte Carlo method is far too computationally heavy to calculate flux (Power per square length unit) within a reasonable time on a planet-sized system, simplifications must be made. We begin by separating the incoming solar radiation from the outgoing thermal radiation emitted by the planet. In this chapter, we discuss how we model the light approaching the Earth and what happens to it as it passes through the atmosphere.
+  Since the Monte Carlo method is far too computationally heavy to calculate flux (Power per area unit) within a reasonable time on a planet-sized system, simplifications must be made. We begin by separating the incoming solar radiation from the outgoing thermal radiation emitted by the planet. In this chapter, we discuss how we model the light approaching the Earth and what happens to it as it passes through the atmosphere.
   
   One important simplification is that we are only interested in the top of the atmosphere, where $\tau_{\nu} = 0$, and the bottom of the atmosphere, where $\tau_{\nu} = \tau_{\nu}^*$, the optical depth of the atmosphere. Everything that happens between these two heights is separated into three cases.
    
@@ -232,7 +247,7 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
         \label{eq:difused_componente}
       \end{equation}
 
-    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface, which will be adressed soon.
+    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface, which will be adressed soon; se equation \ref{eq:multiple-scattering-series}.
   \end{enumerate}
   Together, equations~\ref{eq:direct_compnente} and~\ref{eq:difused_componente} can be combined into
 
@@ -312,7 +327,7 @@ with $0<\epsilon<1$. Another important limitation of this simple radiation model
   
 
 \subsection{Limitations of the Simulation}
-
+\label{sec:limitations}
 This simulation uses numerical methods and simplified models to enable it to run in real time. As a consequence, rounding errors occur on top of the inherent limitations of the mathematical models. The model used to calculate light traveling through the atmosphere toward the Earth is fairly accurate as long as the diffuse components do not become too large, which occurs if there are too many clouds \cite{NASA1986}.
 
 The emission of heat from the planet is simplified by treating the surface as a gray body, which completely ignores the interaction between thermal radiation and the atmosphere. To avoid slowing down the simulation, we also chose not to separate the incoming light into different spectral bands, even though these would interact differently with the atmosphere.

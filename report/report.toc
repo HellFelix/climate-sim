@@ -1,0 +1,18 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {section}{\numberline {2}Theory}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Solar System}{1}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Mikkola's Approximation}{2}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Formula}{2}{subsubsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.3}Heat Equation}{3}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Runge-Kutta Methods}{3}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Spherical Coordinates}{4}{subsubsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.4}Atmosphere}{5}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Monte Carlo Method}{5}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Flux Transmission Towards the Earth}{5}{subsubsection.2.4.2}%
+\contentsline {subsection}{\numberline {2.5}Heat Radiation}{7}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Simulation}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Units}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Limitations of the Simulation}{8}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Results}{9}{section.4}%
+\contentsline {section}{\numberline {5}Conclusion}{12}{section.5}%
+\contentsline {section}{\numberline {6}Use of AI}{12}{section.6}%
