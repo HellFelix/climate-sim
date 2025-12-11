@@ -4,6 +4,17 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdftitle={Overleaf Example},
+    pdfpagemode=FullScreen,
+    }
+
+\urlstyle{same}
 
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{refs.bib}
@@ -24,14 +35,14 @@
   \begin{abstract}
    Climate change is one of the biggest challenges of modern times, posing a threat comparable to that of nuclear war. Enormous resources are therefore allocated to preventing and mitigating the consequences of global warming. To tackle this issue effectively-and to avoid spending time and resources on ineffective measures-climate models are developed. With the aim of understanding how such a model can be constructed and what difficulties arise in the process, we have created a highly simplified climate simulation using programming and mathematical modelling to compute different aspects of a climate system.
    This model does not aim to predict exact measurements, but rather to reproduce real-world phenomena.
-   Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions. It is also able to see biger trends such as the general effect of an increase of greenhouse gases.
+   Our goal with the model was to observe effects such as day–night cycles, seasonal variations, colder poles, and a warmer equator. Although the model failed to reproduce all of these features, it is thermally stable, and it clearly shows notable differences between day and night, summer and winter, as well as between equatorial and polar regions. It is also able to see bigger trends such as the general effect of an increase of greenhouse gases.
 
   \end{abstract}
   
   \section{Introduction}
 
   This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper.
-  Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters will be adjusted to yield realistic behaviour; more on this is explained in section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs; which our model successfully demonstrates.
+  Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behavior such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters will be adjusted to yield realistic behavior; more on this is explained in section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs; which our model successfully demonstrates.
 
   \subsubsection{Nomenclature}
    
@@ -51,7 +62,31 @@
   $$n \equiv \frac{2\pi}{T},$$
   and $t$ is the time in arbitrary units since start.
 
-  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented in Appendix \ref{Mikkola}.
+   
+  
+  \subsection{Mikkola's Approximation}\label{Mikkola}
+  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented below
+  
+  \subsubsection{Formula}
+  Assuming the value of the mean anomaly $M(t)$ is known, Kepler's equation can (in the elliptical case) be rewritten as
+  
+  $$E(t) = M(t) + e(3s-4s^3)$$
+  where
+  $$s \equiv \sin{E(t)/3}.$$
+
+  The trick lies in approximating $s$, which can be done by setting
+  $$\alpha \equiv (1-e)/(4e+\frac{1}{2})$$
+  and
+  $$\beta \equiv \frac{1}{2}M/(4e+\frac{1}{2}).$$
+
+  Now let
+  $$z = (\beta \pm \sqrt{\beta^2+\alpha^3})^{1/3},$$
+  choosing the sign of the root term to match the sign of $\beta$.
+  
+  We can, by means of a series expansion approximate $s$ by
+  $$s \approx z - \frac{\alpha}{z}.$$
+
+  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion.
   
   \subsection{Heat Equation}
   \label{sec:heat_equation}
@@ -143,7 +178,7 @@
 
   We're interested in the $S^2$ Riemann manifold where 
 
-  $$g = 
+  $$g_{\mu\nu} = 
   \begin{pmatrix}
     R^2 & 0 \\
     0 & R^2\sin^2{\theta}
@@ -279,6 +314,8 @@ The emission of heat from the planet is simplified by treating the surface as a 
 
 In addition to these mathematical limitations, there are also conceptual ones. Due to its immense complexity, the atmosphere is treated only as a function acting on radiation. In our simulation it has no internal temperature, which removes any heat dissipation through winds or atmospheric circulation.
 
+Due to time limitations, the scope of the simulation had to be restricted. 
+
 \newpage
 \section{Results}
 
@@ -292,14 +329,14 @@ First, we considered a very simple case: no heat diffusion and a non-rotating pl
     \begin{subfigure}[h!]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/temperature_basic.png}
-        \caption{Simulating temperatures on the surface of a non-rotating planet with an axis perpendicular to its orbital plane around its host star, with no heat diffusion.}
+        \caption{Simulating temperatures on the surface of a non-rotating planet with an axis perpendicular to its orbital plane around its host star, with no heat diffusion. \href{https://www.youtube.com/watch?v=SvivPUXAz7I}{Video link}}
         \label{fig:planet_basic}
     \end{subfigure}
     \hfill
     \begin{subfigure}[h!]{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/temperature_rotating.png}
-        \caption{Simulating temperatures on the surface of a rotating planet with an axis perpendicular to its orbital plane around its host star, with no heat diffusion.}
+        \caption{Simulating temperatures on the surface of a rotating planet with an axis perpendicular to its orbital plane around its host star, with no heat diffusion. \href{https://www.youtube.com/watch?v=8FVZQd3uOtY}{Video link}}
         \label{fig:planet_rotation}
     \end{subfigure}
 
@@ -308,14 +345,14 @@ First, we considered a very simple case: no heat diffusion and a non-rotating pl
     \begin{subfigure}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/temperature_elliptical.png}
-        \caption{Simulating temperatures on the surface of a rotating planet in an elliptical orbit around its host star, with no heat diffusion.}
+        \caption{Simulating temperatures on the surface of a rotating planet in an elliptical orbit around its host star, with no heat diffusion. \href{https://www.youtube.com/watch?v=D6RMlA35kDI}{Video link}}
         \label{fig:planet_elliptic}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{assets/temperature_tilted.png}
-        \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with no heat diffusion.}
+        \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with no heat diffusion. \href{https://www.youtube.com/watch?v=DMpA6C18mrE}{Video link}}
         \label{fig:planet_tilted}
     \end{subfigure}
 
@@ -341,7 +378,7 @@ All of this occurs without any diffusion of heat, which produces very sharp and 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{assets/temperature_diffused.png}
-  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion enabled.}
+  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion enabled. \href{https://www.youtube.com/watch?v=MEuj6M3a9dI}{Video link}}
   \label{fig:planet_diffused}
 \end{figure}
 
@@ -352,7 +389,7 @@ With this model we can observe many real-world phenomena, and although the simul
 \begin{figure}[h!]
   \centering
   \includegraphics[width=\textwidth]{assets/temperature_greenhouse2x.png}
-  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion and an increased amount of greenhouse gases.}
+  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion and an increased amount of greenhouse gases. \href{https://www.youtube.com/watch?v=61haF4oz2wM}{Video link}}
   \label{fig:planet_greenhouse}
 \end{figure}
 
@@ -365,31 +402,6 @@ Our simulation is far from accurate, but it manages to reproduce several real-wo
 
 
 
-  \newpage
-  \appendix
-  \section{Mikkola's Approximation}\label{Mikkola}
-  Here follows the full calculation by which the eccentric anomaly $E(t)$ can be approximated using Mikkola's method. This paper only presents the elliptical case and does not provide any proof or explanation to any of these steps. The curious reader is referred to the original paper \cite{mikkola}.
-
-  \subsection{Formula}
-  Assuming the value of the mean anomaly $M(t)$ is known, Kepler's equation can (in the elliptical case) be rewritten as
-  
-  $$E(t) = M(t) + e(3s-4s^3)$$
-  where
-  $$s \equiv \sin{E(t)/3}.$$
-
-  The trick lies in approximating $s$, which can be done by setting
-  $$\alpha \equiv (1-e)/(4e+\frac{1}{2})$$
-  and
-  $$\beta \equiv \frac{1}{2}M/(4e+\frac{1}{2}).$$
-
-  Now let
-  $$z = (\beta \pm \sqrt{\beta^2+\alpha^3})^{1/3},$$
-  choosing the sign of the root term to match the sign of $\beta$.
-  
-  We can, by means of a series expansion approximate $s$ by
-  $$s \approx z - \frac{\alpha}{z}.$$
-
-  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion.
 
 
  
