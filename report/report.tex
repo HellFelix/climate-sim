@@ -8,8 +8,6 @@
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
-    filecolor=magenta,      
-    urlcolor=cyan,
     pdftitle={Overleaf Example},
     pdfpagemode=FullScreen,
     }
@@ -299,7 +297,7 @@ However, this expression assumes a perfect blackbody, and since the Earth is cer
 \end{equation}
 with $0<\epsilon<1$. Another important limitation of this simple radiation model is that it does not account for interactions with the atmosphere, such as scattering, diffusion, and reflection.
   \section{Simulation}
- The simulation built during this project is written in Rust using the Bevy game engine.
+ The simulation built during this project is written in Rust using the Bevy game engine \cite{bevy_docs}. The heat map is represented as a matrix of height 51 and width 161, the idea being that the width is roughly $\pi$ times greater than the height such that we can project the map using an equirectangular projection onto the spherical planet \cite{wikiprojection}.
   
   \subsection{Units}
    \label{sec:units}
@@ -318,7 +316,7 @@ The emission of heat from the planet is simplified by treating the surface as a 
 
 In addition to these mathematical limitations, there are also conceptual ones. Due to its immense complexity, the atmosphere is treated only as a function acting on radiation. In our simulation it has no internal temperature, which removes any heat dissipation through winds or atmospheric circulation.
 
-Due to time limitations, the scope of the simulation had to be restricted. 
+Due to time limitations, the scope of the simulation had to be restricted. Large climate simulations require computational power at a scale which was simply infeasible for this project, which is why we've scaled down the resolution, distances and update cycles such that it could be run our hardware.
 
 \newpage
 \section{Results}
@@ -362,61 +360,54 @@ First, we considered a very simple case: no heat diffusion and a non-rotating pl
 
     \caption{Overview of the four simulation configurations.}
     \label{fig:four-grid}
-\end{figure}
+  \end{figure}
 
-We begin in Figure~\ref{fig:planet_basic} with a hypothetical planet whose day–night cycle is determined solely by its revolution around its host star: it experiences half a year of daylight and half a year of darkness. This trend can be seen in the cyclical patterns of the northern and southern samples in the figure. The small temperature differences between the northern and southern samples arise from rounding errors and are insignificant.
+  We begin in Figure~\ref{fig:planet_basic} with a hypothetical planet whose day–night cycle is determined solely by its revolution around its host star: it experiences half a year of daylight and half a year of darkness. This trend can be seen in the cyclical patterns of the northern and southern samples in the figure. The small temperature differences between the northern and southern samples arise from rounding errors and are insignificant.
 
-Since heat diffusion is disabled, the poles remain at their initial temperature (the planet starts with a temperature of zero before reaching equilibrium), which results in the minimum temperature values. The equator, on the other hand, quickly climbs to a stable equilibrium temperature.
+  Since heat diffusion is disabled, the poles remain at their initial temperature (the planet starts with a temperature of zero before reaching equilibrium), which results in the minimum temperature values. The equator, on the other hand, quickly climbs to a stable equilibrium temperature.
 
-In Figure~\ref{fig:planet_rotation} we enable rotation around the planet’s own axis, which produces a similar temperature diagram but with much faster day–night cycles.
+  In Figure~\ref{fig:planet_rotation} we enable rotation around the planet’s own axis, which produces a similar temperature diagram but with much faster day–night cycles.
 
-We then proceed to Figure~\ref{fig:planet_elliptic}, where the day–night cycle remains largely the same, but the maximum temperature now varies periodically. This occurs because the distance between the planet and its host star changes throughout the elliptical orbit (see Section~\ref{sec:slora_system}).
+  We then proceed to Figure~\ref{fig:planet_elliptic}, where the day–night cycle remains largely the same, but the maximum temperature now varies periodically. This occurs because the distance between the planet and its host star changes throughout the elliptical orbit (see Section~\ref{sec:slora_system}).
 
-Finally, in Figure~\ref{fig:planet_tilted} we tilt the planet’s rotational axis. We now observe that the northern and southern samples are completely mirrored, which is expected since they still share the same day–night timing but now experience vastly different angles of incidence. We also observe that the minimum temperature changes over time because one of the poles is always slightly tilted toward the star, meaning it no longer has an angle of incidence equal to \( 90^\circ \).
+  Finally, in Figure~\ref{fig:planet_tilted} we tilt the planet’s rotational axis. We now observe that the northern and southern samples are completely mirrored, which is expected since they still share the same day–night timing but now experience vastly different angles of incidence. We also observe that the minimum temperature changes over time because one of the poles is always slightly tilted toward the star, meaning it no longer has an angle of incidence equal to \( 90^\circ \).
 
-\newpage
- 
+  \newpage
+  
 
-All of this occurs without any diffusion of heat, which produces very sharp and unrealistic results, such as poles that receive no incoming heat. The next step is therefore to enable the heat diffusion methods in the simulation.
+  All of this occurs without any diffusion of heat, which produces very sharp and unrealistic results, such as poles that receive no incoming heat. The next step is therefore to enable the heat diffusion methods in the simulation.
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=\textwidth]{assets/temperature_diffused.png}
-  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion enabled. \href{https://www.youtube.com/watch?v=MEuj6M3a9dI}{Video link}}
-  \label{fig:planet_diffused}
-\end{figure}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{assets/temperature_diffused.png}
+    \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion enabled. \href{https://www.youtube.com/watch?v=MEuj6M3a9dI}{Video link}}
+    \label{fig:planet_diffused}
+  \end{figure}
 
-Figure~\ref{fig:planet_diffused} is similar to Figure~\ref{fig:planet_tilted}, but now the minimum temperatures at the poles are more realistic since heat can diffuse across the surface; see Section~\ref{sec:heat_equation}.
+  Figure~\ref{fig:planet_diffused} is similar to Figure~\ref{fig:planet_tilted}, but now the minimum temperatures at the poles are more realistic since heat can diffuse across the surface; see Section~\ref{sec:heat_equation}.
 
-With this model we can observe many real-world phenomena, and although the simulation is not exact by any means, it can still demonstrate larger-scale trends. For example, we can investigate the effects of drastically increasing greenhouse gas concentrations. In the simulation, this is implemented as a change in the constant determining how much energy can leave the system per unit time.
+  With this model we can observe many real-world phenomena, and although the simulation is not exact by any means, it can still demonstrate larger-scale trends. For example, we can investigate the effects of drastically increasing greenhouse gas concentrations. In the simulation, this is implemented as a change in the constant determining how much energy can leave the system per unit time.
 
-\begin{figure}[h!]
-  \centering
-  \includegraphics[width=\textwidth]{assets/temperature_greenhouse2x.png}
-  \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion and an increased amount of greenhouse gases. \href{https://www.youtube.com/watch?v=61haF4oz2wM}{Video link}}
-  \label{fig:planet_greenhouse}
-\end{figure}
+  \begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{assets/temperature_greenhouse2x.png}
+    \caption{Simulating temperatures on the surface of a rotating planet with a tilted axis and an elliptical orbit, with heat diffusion and an increased amount of greenhouse gases. \href{https://www.youtube.com/watch?v=61haF4oz2wM}{Video link}}
+    \label{fig:planet_greenhouse}
+  \end{figure}
 
-In Figure~\ref{fig:planet_greenhouse} we observe a noticeable increase in temperatures across the entire planet, which aligns with real-world expectations.
+  In Figure~\ref{fig:planet_greenhouse} we observe a noticeable increase in temperatures across the entire planet, which aligns with real-world expectations.
 
-\section{Conclusion}
+  \section{Conclusion}
 
-Our simulation is far from realistic, but it manages to reproduce several real-world phenomena, which was our primary goal. It does so while using mathematical models that have been applied in real-world climate and weather simulations by NASA.
+  Our simulation is far from realistic, but it manages to reproduce several real-world phenomena, which was our primary goal. It does so while using mathematical models that have been applied in real-world climate and weather simulations by NASA.
+  \section{Use of AI}
 
-
-\section{Use of AI}
-
-Artificial intelligence was used for the following tasks; all results from AI were rigorously checked.
-\begin{itemize}
-    \item Spelling checks and grammatical corrections.
-    \item Locating specific pages in long documents when searching for information.
-    \item Finding correct syntax for \LaTeX.
-\end{itemize}
-
-
-
-
- 
+  Artificial intelligence was used for the following tasks; all results from AI were rigorously checked.
+  \begin{itemize}
+      \item Spelling checks and grammatical corrections.
+      \item Locating specific pages in long documents when searching for information.
+      \item Finding correct syntax for \LaTeX.
+  \end{itemize}
 
   \newpage
   \printbibliography
