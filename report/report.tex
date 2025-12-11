@@ -136,13 +136,17 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
 
   Note that for partial differential equations, we must also discretesize (approximate) derivatives as follows:
 
-  \begin{equation}
-    \partial^2_{x^ix^i} a_{ij} \approx \frac{-a_{i(j+1)} + 2a_{ij} - a_{i(j-1)}}{(\Delta x)^2}
-  \end{equation}
-
-  Here, $\partial^2_{x^kx^k} a_{ij}$ denotes the second derivative of element $a_{ij}$ with respect to coordinate $x^k$.
-
+  $$
+    \partial^2_{xx} a_{ij} \approx \frac{-a_{i(j+1)} + 2a_{ij} - a_{i(j-1)}}{(\Delta x)^2}
+  $$
   
+  and
+  
+  $$
+    \partial^2_{yy} a_{ij} \approx \frac{-a_{(i+1)j} + 2a_{ij} - a_{(i-1)j}}{(\Delta y)^2}
+  $$
+
+  Here, $\Delta x$ and $\Delta y$ refer to the size of the discretesization (i.e. the size of each pixel).
 
   \subsubsection{Spherical Coordinates}\label{sphere-coords}
   In the beginning of this chapter, we wrote the heat equation using the Laplacian $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Reimann manifold where the interval is
@@ -202,10 +206,9 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
   Now, we can rewrite equation \ref{eq:General-Heat-Eq} as
   $$\partial_t T = \kappa \frac{1}{R^2}(\cot{\theta}\partial_\theta T + \partial^2_{\theta\theta} T + \frac{1}{\sin^2{\theta}}\partial^2_{\phi\phi} T)$$
   which we discretesize using
-  $$\partial_{x^k} T_{ij} \approx \frac{T_{ij}-T_{i(j-1)}}{\Delta x^k}$$
-  $$\partial^2_{x^kx^k} T_{ij} \approx \frac{-T_{(i+1)j} + 2T_{ij} - T_{(i-1)j}}{(\Delta x^k)^2}$$
-  for coordinate $x^k$.
-
+  $$\partial_{\theta} T_{ij} \approx \frac{T_{ij}-T_{i(j-1)}}{\Delta \theta}$$
+  $$\partial^2_{\theta\theta} T_{ij} \approx \frac{-T_{(i+1)j} + 2T_{ij} - T_{(i-1)j}}{(\Delta \theta)^2}$$
+  $$\partial^2_{\phi\phi} T_{ij} \approx \frac{-T_{i(j+1)} + 2T_{ij} - T_{i(j-1)}}{(\Delta \phi)^2}$$
 
   \subsection{Atmosphere}
   The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account. There are several methods for doing this, each with its own strengths and weaknesses.  
