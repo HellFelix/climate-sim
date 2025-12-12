@@ -8,12 +8,11 @@
 \hypersetup{
     colorlinks=true,
     linkcolor=blue,
+    urlcolor=blue,
+    citecolor=blue,
     pdftitle={Overleaf Example},
     pdfpagemode=FullScreen,
-    }
-
-\urlstyle{same}
-
+}
 \usepackage[backend=biber,style=numeric]{biblatex}
 \addbibresource{refs.bib}
 
@@ -50,9 +49,6 @@ Our goal with the model was to observe effects such as day–night cycles, seaso
 
 \setcounter{page}{1} 
 
-
-
-
 \section{Introduction}
 
 
@@ -60,7 +56,7 @@ Climate change is one of the biggest challenges of modern times, posing a threat
 
 This paper aims to demonstrate how a simplified climate model can be constructed and what limitations such a model inevitably has. A simplified model cannot predict exact events such as weather patterns or detailed effects of climate change, but many of the underlying ideas are the same as those used in more complex models. Most components of this climate simulation could, in principle, be incorporated into a more accurate climate model if the complexity of the system were increased. For example, heat transfer in this simulation occurs solely through conduction, which is a strong simplification, since atmospheric convection plays a major role in real-world climate dynamics. More limitations of the model will be discussed at the end of the paper, in section \ref{sec:limitations}.
 
-Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters were adjusted to yield realistic behaviour; more on this is explained in Section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly or not, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs, which our model successfully demonstrates.
+Furthermore, the model is designed to test whether simplifying the atmosphere still produces a stable energy level and whether it can recreate real-world phenomena, or if such simplifications would instead lead to runaway effects or unrealistic behaviour such as extreme temperature differences. Since general trends are of greater interest than exact numerical values, several constants and parameters were adjusted to yield realistic behaviour; more on this is explained in Section~\ref{sec:units}. This might appear questionable when discussing whether the mathematical models underlying the simulation function correctly, but we ask the reader to remember that the graphical output serves as an illustration of the model rather than an exact representation of physical reality. For example, the precise magnitude of the temperature increase due to greenhouse gases is less important than the qualitative observation that such an increase occurs, which our model successfully demonstrates.
    
    
   \section{Theory}
@@ -82,7 +78,7 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
    
   
   \subsection{Mikkola's Approximation}\label{Mikkola}
-  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, it is usually expressed as a Fourier series. For the purposes of this simulation, the exact solution is irrelevant, and there happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987. While the details of this method are beyond the scope of this paper, the method is presented below.
+  The exact solution to the eccentric anomaly $E(t)$ lacks a general closed form, though, for the purposes of this simulation, the exact solution is irrelevant. There happens to be a very good numerical approximation for $E(t)$ developed by Seppo Mikkola in 1987 \cite{mikkola}. While the details of why this method yields such a highly accurate approximation are beyond the scope of this paper, the full method is presented below.
   
   \subsubsection{Formula}
   Assuming the value of the mean anomaly $M(t)$ is known, Kepler's equation can (in the elliptical case) be rewritten as
@@ -103,7 +99,7 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
   We can, by means of a series expansion approximate $s$ by
   $$s \approx z - \frac{\alpha}{z}.$$
 
-  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion, se \cite{mikkola}.
+  Note that $M$ should be chosen as to be in the range $(-\pi, \pi]$ such that it is as close as possible to $0$, thus yielding the least error from the series expansion, see \cite{mikkola}.
   
   \subsection{Heat Equation}
   \label{sec:heat_equation}
@@ -115,13 +111,13 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
   where $\nabla^2$ denotes the Laplacian \cite{wikiheat}. In section \ref{sphere-coords}, we will generalize the heat equation further to be defined on a spherical surface using the Laplace-Beltrami operator. For now, however, we will use the simplest possible geometry to discuss how we can simulate heat diffusion in a discrete system.
 
   \subsubsection{Runge-Kutta Methods}
-  Assuming we have discretesized the map into a heat matrix T at some time $t$, we can solve for T at time (t+h) using a system of RK4 calculations \cite{originalkutta} \cite{wikikutta}.
+  Assuming we have discretized the map into a heat matrix T at some time $t$, we can solve for T at time (t+h) using a system of RK4 calculations \cite{originalkutta} \cite{wikikutta}.
 
   Given an equation
   \begin{equation}
     \frac{dA}{dt} = F(A, t)
   \end{equation}
-  where $A$ is a matrix and $F$ is a linear function in the basis of $A$, and an initial value of $A(t)$, we get
+  where $A$ is a matrix and $F$ is a linear function in the basis of $A$, and an initial value of $A(t)$, along with a time step $h$, we can estimate $A$ at the next time step as
 
   \begin{equation}
     A(t+h) \approx \frac{h}{6}(k_1+k_2+k_3+k_4)
@@ -147,9 +143,9 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
     k_4 = F(A(t) + hk_3).
     \label{eq:k4}
   \end{equation}
-  The approximation given by RK4 perform significantly better than the familiar Euler method, especially at larger time-steps, allowing us to run the simulation at higher speeds.
+  The approximation given by RK4 performs significantly better than the familiar Euler method, especially at larger time-steps, allowing us to run the simulation at higher speeds.
 
-  Note that for partial differential equations, we must also discretesize (approximate) derivatives as follows:
+  Note that for partial differential equations such as the heat equation, we must also discretize (approximate) the second derivatives with respect to coordinates $x$ and $y$ as 
 
   $$
     \partial^2_{xx} a_{ij} \approx \frac{-a_{i(j+1)} + 2a_{ij} - a_{i(j-1)}}{(\Delta x)^2}
@@ -161,10 +157,10 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
     \partial^2_{yy} a_{ij} \approx \frac{-a_{(i+1)j} + 2a_{ij} - a_{(i-1)j}}{(\Delta y)^2}
   $$
 
-  Here, $\Delta x$ and $\Delta y$ refer to the size of the discretesization (i.e. the size of each pixel).
+  Here, $\Delta x$ and $\Delta y$ refer to the size of the discretization (i.e. the size of each pixel).
 
   \subsubsection{Spherical Coordinates}\label{sphere-coords}
-  In the beginning of this chapter, we wrote the heat equation using the Laplacian $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Reimann manifold where the interval is
+  Initially, we wrote the heat equation using the Laplacian $\nabla^2$, which works for geometries lacking any curvature where the metric tensor $g_{\mu\nu}$ is defined on the flat-space $\mathbb{R}^2$ Riemann manifold and the interval is
   $$ds^2 = dx^2 + dy^2.$$
 
   In general, we define the metric tensor on a manifold through the interval
@@ -220,13 +216,13 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
   
   Now, we can rewrite equation \ref{eq:General-Heat-Eq} as
   $$\partial_t T = \kappa \frac{1}{R^2}(\cot{\theta}\partial_\theta T + \partial^2_{\theta\theta} T + \frac{1}{\sin^2{\theta}}\partial^2_{\phi\phi} T)$$
-  which we discretesize using
+  which we discretize using
   $$\partial_{\theta} T_{ij} \approx \frac{T_{ij}-T_{i(j-1)}}{\Delta \theta}$$
   $$\partial^2_{\theta\theta} T_{ij} \approx \frac{-T_{(i+1)j} + 2T_{ij} - T_{(i-1)j}}{(\Delta \theta)^2}$$
   $$\partial^2_{\phi\phi} T_{ij} \approx \frac{-T_{i(j+1)} + 2T_{ij} - T_{i(j-1)}}{(\Delta \phi)^2}$$
 
   \subsection{Atmosphere}
-  The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account.   
+  The atmosphere is arguably the most important and most complex part of any climate model. Without it, calculations and simulations become very simple, and everything can be simplified to black bodies or gray bodies. However, when the object in question is not a stellar body like the Moon, the atmosphere must be taken into account since its composition largely determines the temperature at which equilibrium is reached.
   \subsubsection{Monte Carlo Method}
   The Monte Carlo method is the most accurate approach for simulating light traveling through a medium such as the atmosphere. In this method, the path of each photon is simulated individually, and every interaction with the atmosphere is calculated separately. It is therefore highly flexible and can be applied to any medium and at any wavelength, but it is unrealistic for large-scale simulations due to its heavy computational cost. \cite{NASA1986}  
   \subsubsection{Flux Transmission Towards the Earth}
@@ -247,7 +243,7 @@ Furthermore, the model is designed to test whether simplifying the atmosphere st
         \label{eq:difused_componente}
       \end{equation}
 
-    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface, which will be adressed soon; se equation \ref{eq:multiple-scattering-series}.
+    \item The diffuse component that is scattered multiple times and reflected between the atmosphere and the surface, which will be addressed soon; see equation \ref{eq:multiple-scattering-series}.
   \end{enumerate}
   Together, equations~\ref{eq:direct_compnente} and~\ref{eq:difused_componente} can be combined into
 
@@ -315,13 +311,13 @@ However, this expression assumes a perfect blackbody, and since the Earth is cer
 \end{equation}
 with $0<\epsilon<1$. Another important limitation of this simple radiation model is that it does not account for interactions with the atmosphere, such as scattering, diffusion, and reflection.
   \section{Simulation}
- The simulation built during this project is written in Rust using the Bevy game engine \cite{bevy_docs}. The heat map is represented as a matrix of height 51 and width 161, the idea being that the width is roughly $\pi$ times greater than the height such that we can project the map using an equirectangular projection onto the spherical planet \cite{wikiprojection}.
+  The simulation built during this project is written in Rust using the Bevy game engine \cite{bevy_docs}. The heat map is represented as a matrix of height 51 and width 161, the idea being that the width is roughly $\pi$ times greater than the height such that we can project the map using an equirectangular projection onto the spherical planet \cite{wikiprojection}. The application of physical calculations such as heat absorbtion, black body radiation, and heat diffusion are applied separately, such that their rate can be carefully controlled. Physical constants along with all other parameters of the simulation are stored as constants and can be changed for the purposes of showcasing certain phenomena. The full code for the simulation can be found on \href{https://github.com/HellFelix/climate-sim/tree/main/sim}{Github}.
   
   \subsection{Units}
    \label{sec:units}
   For the purposes of this project, the units of measurements are not the regular SI-units. Because we're interested in the trends, and the relationships between parameters and outcomes, the values of the simulation parameters have been set such that they yield interesting and realistic results with respect to internal consistency (within the units of measurements we're using, whatever they may be).
 
-  When in the course of reading this report, the reader comes across the usage of distance units [D.U.] or temperature units [T.U.], they should be imagined as corresponding to meters [m] and Kelvin [K] respectively with some arbitrary scaling factor. Note that temperature will always be given in an absolute scale (i.e. starting at zero).
+  When in the course of reading this report, the reader comes across the usage of distance units [D.U.], time units [Ti.U], or temperature units [Te.U.], they should be imagined as corresponding to meters [m], seconds [s], and Kelvin [K] respectively with some arbitrary scaling factor. Note that temperature will always be given in an absolute scale (i.e. starting at zero).
 
   The visual representation should not be thought of as having a realistic scale. The size of a planet with respect to the distance to its host star is so small as to be impossible to see in a realistic relative scale. The same thing is true for the relative difference in size between the planet and the host star itself (the diameter ratio between the earth and the sun is roughly 110:1 \cite{wikisun}).
   
@@ -334,7 +330,7 @@ The emission of heat from the planet is simplified by treating the surface as a 
 
 In addition to these mathematical limitations, there are also conceptual ones. Due to its immense complexity, the atmosphere is treated only as a function acting on radiation. In our simulation it has no internal temperature, which removes any heat dissipation through winds or atmospheric circulation.
 
-Due to time limitations, the scope of the simulation had to be restricted. Large climate simulations require computational power at a scale which was simply infeasible for this project, which is why we've scaled down the resolution, distances and update cycles such that it could be run our hardware.
+Due to time limitations, the scope of the simulation had to be restricted. Large climate simulations require computational power at a scale which was simply infeasible for this project, which is why we've scaled down the resolution, distances and update cycles such that it could run on our hardware.
 
 \newpage
 \section{Results}
@@ -380,13 +376,13 @@ First, we considered a very simple case: no heat diffusion and a non-rotating pl
     \label{fig:four-grid}
   \end{figure}
 
-  We begin in Figure~\ref{fig:planet_basic} with a hypothetical planet whose day–night cycle is determined solely by its revolution around its host star: it experiences half a year of daylight and half a year of darkness. This trend can be seen in the cyclical patterns of the northern and southern samples in the figure. The small temperature differences between the northern and southern samples arise from rounding errors and are insignificant.
+  We begin in Figure~\ref{fig:planet_basic} with a hypothetical planet whose day–night cycle is determined solely by its revolution around its host star: it experiences half a year of daylight and half a year of darkness. This trend can be seen in the cyclical patterns of the northern and southern samples in the figure. The small temperature differences between the northern and southern samples arise from rounding errors when picking latitudes for the samples and are insignificant.
 
   Since heat diffusion is disabled, the poles remain at their initial temperature (the planet starts with a temperature of zero before reaching equilibrium), which results in the minimum temperature values. The equator, on the other hand, quickly climbs to a stable equilibrium temperature.
 
   In Figure~\ref{fig:planet_rotation} we enable rotation around the planet’s own axis, which produces a similar temperature diagram but with much faster day–night cycles.
 
-  We then proceed to Figure~\ref{fig:planet_elliptic}, where the day–night cycle remains largely the same, but the maximum temperature now varies periodically. This occurs because the distance between the planet and its host star changes throughout the elliptical orbit (see Section~\ref{sec:slora_system}).
+  We then proceed to Figure~\ref{fig:planet_elliptic}, where the orbital shape is elliptical, and the day–night cycle remains largely the same, but the maximum temperature now varies periodically. This occurs because the distance between the planet and its host star changes throughout the elliptical orbit (see Section~\ref{sec:slora_system}), and the planet moves through certain parts of the cycle quicker than other parts, meaning that certain parts of the planet will be heated more at certain parts of the orbit.
 
   Finally, in Figure~\ref{fig:planet_tilted} we tilt the planet’s rotational axis. We now observe that the northern and southern samples are completely mirrored, which is expected since they still share the same day–night timing but now experience vastly different angles of incidence. We also observe that the minimum temperature changes over time because one of the poles is always slightly tilted toward the star, meaning it no longer has an angle of incidence equal to \( 90^\circ \).
 
@@ -416,8 +412,11 @@ First, we considered a very simple case: no heat diffusion and a non-rotating pl
   In Figure~\ref{fig:planet_greenhouse} we observe a noticeable increase in temperatures across the entire planet, which aligns with real-world expectations.
 
   \section{Conclusion}
+  This project demonstrates how a simplified climate model can capture the fundamental thermodynamic mechanisms governing planetary climate systems. Despite its many simplifications, the simulation reproduces key large-scale phenomena such as day–night cycles, seasonal variations, equator–pole temperature gradients, and the qualitative effect of increased greenhouse gas concentrations.
 
-  Our simulation is far from realistic, but it manages to reproduce several real-world phenomena, which was our primary goal. It does so while using mathematical models that have been applied in real-world climate and weather simulations by NASA.
+  From a thermodynamic perspective, the results highlight the importance of energy balance in determining long-term climate behavior. Even small changes in the rate at which energy leaves the system can lead to significant shifts in equilibrium temperature, illustrating a core principle behind anthropogenic climate change. While the model does not aim to produce quantitative predictions, it provides conceptual insight into why sustained increases in greenhouse gases pose a long-term risk to climate stability.
+
+  Although far from a complete representation of Earth’s climate, the model serves as an accessible tool for understanding the physical principles underlying more advanced climate simulations. Such simplified models play an important role in sustainable development by helping clarify the mechanisms behind climate change and informing the scientific basis for mitigation strategies.
   \section{Use of AI}
 
   Artificial intelligence was used for the following tasks; all results from AI were rigorously checked.
